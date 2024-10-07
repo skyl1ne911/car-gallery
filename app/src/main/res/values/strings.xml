@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">auto gallery</string>
+    <string name="discover">Discover</string>
+    <string name="activities">Activities</string>
+</resources>
