@@ -1,6 +1,11 @@
 package com.myapp.autogallery;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.DragEvent;
+import android.view.MotionEvent;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +21,10 @@ import com.myapp.autogallery.fragments.UpperBar;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static ViewPager2 viewPager;
+    private UpperBar upperBar;
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,12 +36,34 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        if (savedInstanceState == null) {
+            upperBar = new UpperBar();
+            getSupportFragmentManager().beginTransaction().add(R.id.fragmentUpperBar, upperBar).commit();
+        }
 
-        ViewPager2 viewPager = findViewById(R.id.sliderPager);
         FragmentStateAdapter fragment = new SliderAdapter(this);
-        viewPager.setAdapter(fragment);
 
+        viewPager = findViewById(R.id.sliderPager);
+        viewPager.setAdapter(fragment);
+        viewPager.setCurrentItem(UpperBar.Tabs.ACTIVITIES.getNumber(), false);
+
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+
+                UpperBar.Tabs selectTab = (position == UpperBar.Tabs.ACTIVITIES.getNumber())
+                        ? UpperBar.Tabs.ACTIVITIES
+                        : UpperBar.Tabs.DISCOVER;
+
+                upperBar.selectTab(selectTab);
+
+            }
+        });
     }
+
+
+
 
 
 }

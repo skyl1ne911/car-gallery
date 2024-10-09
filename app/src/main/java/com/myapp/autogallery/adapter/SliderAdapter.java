@@ -10,7 +10,7 @@ import com.myapp.autogallery.fragments.FragmentSlider;
 
 public class SliderAdapter extends FragmentStateAdapter {
 
-    public int[] images = new int[2];
+    public static int[] images = new int[2];
 
     public SliderAdapter(FragmentActivity fa) {
         super(fa);
@@ -25,7 +25,8 @@ public class SliderAdapter extends FragmentStateAdapter {
     }
 
     @Override
-    public int getItemCount() {
-        return images.length;
-    }
+    public int getItemCount() { return images.length; }
+
+    public int[] getAllFragments() { return images; }
+
 }

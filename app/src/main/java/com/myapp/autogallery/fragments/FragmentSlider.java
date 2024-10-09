@@ -15,10 +15,10 @@ public class FragmentSlider extends Fragment {
 
     private int pageNumber;
 
-    public static FragmentSlider newInstance(int num) {
+    public static FragmentSlider newInstance(int imageId) {
         FragmentSlider slider = new FragmentSlider();
         Bundle args = new Bundle();
-        args.putInt("num", num);
+        args.putInt("imageId", imageId);
         slider.setArguments(args);
         return slider;
     }
@@ -26,7 +26,7 @@ public class FragmentSlider extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pageNumber = getArguments() != null ? getArguments().getInt("num") : 1;
+        pageNumber = getArguments() != null ? getArguments().getInt("imageId") : 1;
     }
 
     @Override
@@ -35,9 +35,7 @@ public class FragmentSlider extends Fragment {
         ImageView image = view.findViewById(R.id.slider);
 
         if(getArguments() != null)
-            image.setImageResource(getArguments().getInt("num"));
-
-
+            image.setImageResource(getArguments().getInt("imageId"));
 
         return view;
     }
