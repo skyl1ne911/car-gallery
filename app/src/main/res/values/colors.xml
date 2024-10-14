@@ -3,5 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="mainBackground">#202020</color>
-    <color name="bar">#2c2c2c</color>
+    <color name="backgroundBar">#2c2c2c</color>
+    <color name="navigationBar">#6D6D6D</color>
 </resources>

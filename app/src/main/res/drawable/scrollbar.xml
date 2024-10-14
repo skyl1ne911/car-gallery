@@ -8,9 +8,8 @@
         android:height="4dp"/>
 
     <gradient android:type="linear"
-        android:useLevel="true"
         android:startColor="#b63e9b"
-        android:endColor="#3856ED"
+        android:endColor="#ED387D"
         />
 
 </shape>

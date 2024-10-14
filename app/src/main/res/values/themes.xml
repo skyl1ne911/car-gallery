@@ -2,6 +2,7 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.AutoGallery" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">@font/tomorrow_medium</item>
     </style>
 
     <style name="Theme.AutoGallery" parent="Base.Theme.AutoGallery" />

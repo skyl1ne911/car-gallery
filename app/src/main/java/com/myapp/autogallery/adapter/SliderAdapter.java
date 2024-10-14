@@ -7,26 +7,26 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.myapp.autogallery.R;
 import com.myapp.autogallery.fragments.FragmentSlider;
+import com.myapp.autogallery.items.ActivitySection;
+
+import java.util.List;
 
 public class SliderAdapter extends FragmentStateAdapter {
 
-    public static int[] images = new int[2];
+    private List<Fragment> fragments;
 
-    public SliderAdapter(FragmentActivity fa) {
+    public SliderAdapter(FragmentActivity fa, List<Fragment> fragments) {
         super(fa);
-        images[0] = R.drawable.a1dbaaf7babc03ac39e0968b12021a1c;
-        images[1] = R.drawable.devushka_voennyj_ushki_872540_3840x2400;
+        this.fragments = fragments;
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return FragmentSlider.newInstance(images[position]);
+        return fragments.get(position);
     }
 
     @Override
-    public int getItemCount() { return images.length; }
-
-    public int[] getAllFragments() { return images; }
+    public int getItemCount() { return fragments.size(); }
 
 }
