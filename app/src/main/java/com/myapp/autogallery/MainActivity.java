@@ -1,6 +1,7 @@
 package com.myapp.autogallery;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -53,10 +54,19 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().add(R.id.fragmentLowerBar, lowerBar).commit();
         }
 
-        String[] desc = getResources().getStringArray(R.array.bigCard);
+
         List<Fragment> fragments = new ArrayList<>();
         activitiesSection = new ArrayList<>();
-        activitiesSection.add(new ActivitySection(1, R.drawable.chiron, desc[0], desc[1]));
+        activitiesSection.add(new ActivitySection(1, R.drawable.chiron,
+                getString(R.string.hyperCarTitle), getString(R.string.hyperCarText),
+                ActivitySection.BIG));
+
+        activitiesSection.add(new ActivitySection(2, R.drawable.bmwe30,
+                getString(R.string.rareCarTitle), getString(R.string.rareCarText), ActivitySection.SMALL));
+        activitiesSection.add(new ActivitySection(this, 3, R.drawable.dodgechallenger,
+                R.string.muscleCarTitle, R.string.muscleCarText, ActivitySection.MEDIUM));
+        activitiesSection.add(new ActivitySection(this, 3, R.drawable.dodgechallenger,
+                R.string.muscleCarTitle, R.string.muscleCarText, ActivitySection.MEDIUM));
 
 
         fragments.add(FragmentSlider.newInstance(activitiesSection));
@@ -84,6 +94,5 @@ public class MainActivity extends AppCompatActivity {
             }
         };
     }
-
 
 }

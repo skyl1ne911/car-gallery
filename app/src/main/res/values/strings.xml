@@ -4,8 +4,13 @@
     <string name="activities">Activities</string>
     <string name="explore">Explore</string>
 
-    <string-array name="bigCard">
-        <item>Hyper Cars</item>
-        <item>Fastest cars in the world</item>
-    </string-array>
+    <string name="hyperCarTitle">Hyper Cars</string>
+    <string name="hyperCarText">Fastest cars in the world</string>
+
+    <string name="rareCarTitle">Rare Cars</string>
+    <string name="rareCarText">The most iconic cars</string>
+
+    <string name="muscleCarTitle">Muscle Cars</string>
+    <string name="muscleCarText">The most\npowerful cars</string>
+
 </resources>
