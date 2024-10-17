@@ -3,4 +3,8 @@
     <dimen name="marginTopCard">15dp</dimen>
     <dimen name="marginLeftRightCard">13dp</dimen>
     <dimen name="cornerRadiusCard">17dp</dimen>
+
+    <dimen name="mediumCardTitleMarginSide">15dp</dimen>
+    <dimen name="mediumCardTitleMarginTop">16dp</dimen>
+
 </resources>

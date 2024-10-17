@@ -9,15 +9,21 @@ import androidx.annotation.NonNull;
 
 public class ActivitySection implements Parcelable {
 
-    public static final int BIG = 2;
-    public static final int MEDIUM = 1;
     public static final int SMALL = 0;
+    public static final int MEDIUM = 1;
+    public static final int BIG = 2;
+
+    public static final int CONTENT_UPLEFT = 0;
+    public static final int CONTENT_UPRIGHT = 1;
+    public static final int CONTENT_LOWLEFT = 2;
+    public static final int CONTENT_LOWRIGHT = 3;
 
 
     private int imageId;
     private final int ID;
     private String title, text;
-    private final int tag;
+    public final int tag;
+    private int titlePattern, textPattern;
 
     public ActivitySection(int id, int imageId, String title, String text, int tag) {
         ID = id;
@@ -34,6 +40,24 @@ public class ActivitySection implements Parcelable {
         this.text = context.getString(textId);
         this.tag = tag;
     }
+
+    public ActivitySection(int id, int image, int tag) {
+        ID = id;
+        imageId = image;
+        this.tag = tag;
+    }
+
+    public ActivitySection(int id, int imageId, String title, String text, int tag,
+                           int titlePattern, int textPattern) throws IllegalArgumentException {
+        this(id, imageId, title, text, tag);
+
+        if (titlePattern > 3 || textPattern > 3)
+            throw new IllegalArgumentException("WRONG PATTERN VALUE");
+
+        this.titlePattern = titlePattern;
+        this.textPattern = textPattern;
+    }
+
 
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
@@ -64,6 +88,16 @@ public class ActivitySection implements Parcelable {
         }
     };
 
+    public void setTextPattern(int number) {
+        if (number > 3 || number < 0) throw new IllegalArgumentException("WRONG VALUE");
+        textPattern = number;
+    }
+
+    public void setTitlePattern(int number) {
+        if (number > 3 || number < 0) throw new IllegalArgumentException("WRONG VALUE");
+        titlePattern = number;
+    }
+
     public int getImageId() {
         return imageId;
     }
@@ -78,7 +112,9 @@ public class ActivitySection implements Parcelable {
         return text;
     }
 
-    public int getTag() { return tag; }
+    public int getTextPattern() { return textPattern; }
+
+    public int getTitlePattern() { return titlePattern; }
 
     @Override
     public int describeContents() { return 0; }

@@ -62,5 +62,4 @@ public class FragmentSlider extends Fragment {
 
         return view;
     }
-
 }

@@ -25,12 +25,13 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private int ID = 1;
+
     public static ViewPager2 viewPager;
     private UpperBar upperBar;
     private LowerBar lowerBar;
 
     public static List<ActivitySection> activitiesSection;
-
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -54,23 +55,23 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().add(R.id.fragmentLowerBar, lowerBar).commit();
         }
 
-
         List<Fragment> fragments = new ArrayList<>();
         activitiesSection = new ArrayList<>();
-        activitiesSection.add(new ActivitySection(1, R.drawable.chiron,
-                getString(R.string.hyperCarTitle), getString(R.string.hyperCarText),
-                ActivitySection.BIG));
 
-        activitiesSection.add(new ActivitySection(2, R.drawable.bmwe30,
-                getString(R.string.rareCarTitle), getString(R.string.rareCarText), ActivitySection.SMALL));
-        activitiesSection.add(new ActivitySection(this, 3, R.drawable.dodgechallenger,
-                R.string.muscleCarTitle, R.string.muscleCarText, ActivitySection.MEDIUM));
-        activitiesSection.add(new ActivitySection(this, 3, R.drawable.dodgechallenger,
-                R.string.muscleCarTitle, R.string.muscleCarText, ActivitySection.MEDIUM));
+        activitiesSection.add(addData(R.drawable.chiron, R.string.hyperCarTitle,
+                R.string.hyperCarText, ActivitySection.BIG));
+        activitiesSection.add(addData(R.drawable.bmwe30, R.string.rareCarTitle,
+                R.string.rareCarText, ActivitySection.SMALL));
+//        activitiesSection.add(addData(R.drawable.dodgechallenger, R.string.muscleCarTitle,
+//                R.string.muscleCarText, ActivitySection.MEDIUM));
+
+        activitiesSection.add(new ActivitySection(4, R.drawable.dodgechallenger,
+                getString(R.string.muscleCarTitle), getString(R.string.muscleCarText),
+                ActivitySection.MEDIUM, ActivitySection.CONTENT_LOWLEFT, ActivitySection.CONTENT_UPLEFT)
+        );
 
 
         fragments.add(FragmentSlider.newInstance(activitiesSection));
-
         FragmentStateAdapter fragment = new SliderAdapter(this, fragments);
 
         viewPager = findViewById(R.id.sliderPager);
@@ -79,20 +80,24 @@ public class MainActivity extends AppCompatActivity {
         viewPager.registerOnPageChangeCallback(registerPageSelect());
     }
 
-
     public ViewPager2.OnPageChangeCallback registerPageSelect() {
         return new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
-                super.onPageSelected(position);
-
-                UpperBar.Tabs selectTab = (position == UpperBar.Tabs.ACTIVITIES.getNumber())
-                        ? UpperBar.Tabs.ACTIVITIES
-                        : UpperBar.Tabs.DISCOVER;
-
-                upperBar.selectTab(selectTab);
+            super.onPageSelected(position);
+            UpperBar.Tabs selectTab = (position == UpperBar.Tabs.ACTIVITIES.getNumber())
+                    ? UpperBar.Tabs.ACTIVITIES
+                    : UpperBar.Tabs.DISCOVER;
+            upperBar.selectTab(selectTab);
             }
         };
+    }
+
+    public ActivitySection addData(int imageResource, int titleResource, int textResource, int size) {
+        String title = getString(titleResource);
+        String text = getString(textResource);
+        int newId = ID++;
+        return new ActivitySection(newId, imageResource, title, text, size);
     }
 
 }

@@ -1,48 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/cardView"
-    android:layout_width="172dp"
-    android:layout_height="160dp"
-    app:cardCornerRadius="@dimen/cornerRadiusCard"
-
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/marginTopCard">
 
-    <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/mainBackground">
+    <androidx.cardview.widget.CardView android:id="@+id/cardView"
+        android:layout_width="0dp"
+        android:layout_height="160dp"
+        app:cardCornerRadius="@dimen/cornerRadiusCard"
 
-        <ImageView android:id="@+id/smallCardImage"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop" />
+            android:background="@color/mainBackground">
 
-        <TextView android:id="@+id/smallCardTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            <ImageView android:id="@+id/smallCardImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop" />
 
-            android:fontFamily="@font/abel_regular"
-            android:textSize="22sp"
+            <TextView android:id="@+id/smallCardTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
 
-            android:layout_marginLeft="16dp"
-            android:layout_marginBottom="35dp"
+                android:fontFamily="@font/abel_regular"
+                android:textSize="22sp"
 
-            app:layout_constraintLeft_toLeftOf="@+id/smallCardImage"
-            app:layout_constraintBottom_toBottomOf="@+id/smallCardImage"/>
+                android:layout_marginLeft="16dp"
+                android:layout_marginBottom="35dp"
 
-        <TextView android:id="@+id/smallCardText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="@+id/smallCardImage"
+                app:layout_constraintBottom_toBottomOf="@+id/smallCardImage"/>
 
-            android:textSize="14sp"
-            android:fontFamily="@font/tomorrow_light"
+            <TextView android:id="@+id/smallCardText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
 
-            android:layout_marginLeft="16dp"
-            android:layout_marginBottom="13dp"
+                android:textSize="14sp"
+                android:fontFamily="@font/tomorrow_light"
+                android:alpha="0.8"
 
-            app:layout_constraintLeft_toLeftOf="@+id/smallCardImage"
-            app:layout_constraintBottom_toBottomOf="@+id/smallCardImage"/>
+                android:layout_marginLeft="16dp"
+                android:layout_marginBottom="13dp"
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+                app:layout_constraintLeft_toLeftOf="@+id/smallCardImage"
+                app:layout_constraintBottom_toBottomOf="@+id/smallCardImage"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>
