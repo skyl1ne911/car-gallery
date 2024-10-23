@@ -1,77 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
-    android:layout_marginTop="@dimen/marginTopCard"
-    android:layout_marginLeft="@dimen/marginLeftRightCard"
-    android:layout_marginRight="@dimen/marginLeftRightCard">
+    style="@style/cardContainer">
 
-    <androidx.cardview.widget.CardView android:id="@+id/cardViewBig"
-        android:layout_width="0dp"
-        android:layout_height="140dp"
-        app:cardCornerRadius="@dimen/cornerRadiusCard"
+    <androidx.cardview.widget.CardView android:id="@+id/cardView"
+        style="@style/cardViewBig"
+        tools:ignore="MissingConstraints">
 
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/innerContainer"
+            style="@style/cardInnerContainer">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/card_gradient">
-
-            <ImageView android:id="@+id/bigCardImage"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-
-                android:src="@drawable/chiron"
-                android:scaleType="centerCrop"
-                android:alpha="0.2"
-
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <include layout="@layout/card_image"/>
 
             <ImageView android:id="@+id/bigCardIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
 
-                android:layout_marginTop="26dp"
+                android:layout_marginTop="25dp"
                 android:layout_marginLeft="23dp"
 
-                app:layout_constraintTop_toTopOf="@+id/bigCardImage"
-                app:layout_constraintLeft_toLeftOf="@+id/bigCardImage"/>
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"/>
 
-            <TextView android:id="@+id/bigCardTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
+            <TextView android:id="@+id/cardTitle"
+                style="@style/cardTitle"
                 android:layout_marginLeft="23dp"
-                android:layout_marginBottom="45dp"
-                android:alpha="0.8"
+                android:layout_marginBottom="4dp"
 
-                android:fontFamily="@font/abel_regular"
-                android:textSize="22sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/cardText"/>
 
-                app:layout_constraintLeft_toLeftOf="@+id/bigCardImage"
-                app:layout_constraintBottom_toBottomOf="@+id/bigCardImage"/>
-
-            <TextView android:id="@+id/bigCardText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:fontFamily="@font/tomorrow_light"
-                android:textSize="14sp"
-                android:alpha="0.8"
-
+            <TextView android:id="@+id/cardText"
+                style="@style/cardText"
                 android:layout_marginLeft="23dp"
                 android:layout_marginBottom="22dp"
 
-                app:layout_constraintLeft_toLeftOf="@+id/bigCardImage"
-                app:layout_constraintBottom_toBottomOf="@+id/bigCardImage"/>
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

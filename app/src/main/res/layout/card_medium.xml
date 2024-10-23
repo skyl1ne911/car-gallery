@@ -1,36 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/marginTopCard">
+    style="@style/cardContainer">
 
     <androidx.cardview.widget.CardView android:id="@+id/cardView"
-        android:layout_width="0dp"
-        android:layout_height="235dp"
-        app:cardCornerRadius="@dimen/cornerRadiusCard"
+        style="@style/cardViewMedium"
+        tools:ignore="MissingConstraints">
 
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/innerContainer"
+            style="@style/cardInnerContainer">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/mainBackground">
+            <include layout="@layout/card_image"/>
 
-            <ImageView android:id="@+id/mediumCardImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop" />
-
-            <TextView android:id="@+id/mediumCardTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:textSize="22sp"
-                android:fontFamily="@font/abel_regular"
+            <TextView android:id="@+id/cardTitle"
+                style="@style/cardTitle"
 
                 android:layout_marginTop="16dp"
                 android:layout_marginLeft="15dp"
@@ -38,13 +23,8 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"/>
 
-            <TextView android:id="@+id/mediumCardText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:textSize="14sp"
-                android:fontFamily="@font/tomorrow_light"
-                android:alpha="0.8"
+            <TextView android:id="@+id/cardText"
+                style="@style/cardText"
 
                 android:layout_marginLeft="15dp"
                 android:layout_marginBottom="13dp"

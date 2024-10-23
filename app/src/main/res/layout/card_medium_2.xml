@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     style="@style/cardContainer">
-
+    
     <androidx.cardview.widget.CardView android:id="@+id/cardView"
-        style="@style/cardViewSmall"
+        style="@style/cardViewMedium"
         tools:ignore="MissingConstraints">
-
+        
         <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/innerContainer"
             style="@style/cardInnerContainer">
 
@@ -16,18 +16,21 @@
 
             <TextView android:id="@+id/cardTitle"
                 style="@style/cardTitle"
-                android:layout_marginLeft="14dp"
+                android:layout_marginLeft="18dp"
 
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toTopOf="@+id/cardText"/>
 
             <TextView android:id="@+id/cardText"
                 style="@style/cardText"
-                android:layout_marginLeft="14dp"
-                android:layout_marginBottom="13dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginBottom="15dp"
 
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

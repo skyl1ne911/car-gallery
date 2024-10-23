@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -53,6 +54,7 @@ public class FragmentSlider extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recyclerSectionActivities);
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
+
 
         if (getArguments() != null) {
             sections = getArguments().getParcelableArrayList("sections");

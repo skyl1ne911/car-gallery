@@ -10,6 +10,8 @@
 
         app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
         app:spanCount="2"
+        android:paddingBottom="13dp"
+        android:clipToPadding="false"
         android:scrollbars="vertical"
         android:orientation="vertical"
 

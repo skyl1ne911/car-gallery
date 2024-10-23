@@ -2,10 +2,12 @@ package com.myapp.autogallery;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -14,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.myapp.autogallery.adapter.ActivityAdapter;
 import com.myapp.autogallery.adapter.SliderAdapter;
 import com.myapp.autogallery.fragments.FragmentSlider;
 import com.myapp.autogallery.fragments.LowerBar;
@@ -55,21 +58,26 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().add(R.id.fragmentLowerBar, lowerBar).commit();
         }
 
+        LayerDrawable cardTextGradients = (LayerDrawable) AppCompatResources.getDrawable(this, R.drawable.card_text_gradient);
         List<Fragment> fragments = new ArrayList<>();
         activitiesSection = new ArrayList<>();
 
-        activitiesSection.add(addData(R.drawable.chiron, R.string.hyperCarTitle,
-                R.string.hyperCarText, ActivitySection.BIG));
-        activitiesSection.add(addData(R.drawable.bmwe30, R.string.rareCarTitle,
-                R.string.rareCarText, ActivitySection.SMALL));
-//        activitiesSection.add(addData(R.drawable.dodgechallenger, R.string.muscleCarTitle,
-//                R.string.muscleCarText, ActivitySection.MEDIUM));
+        activitiesSection.add(new ActivitySection(0, R.drawable.chiron, R.drawable.icon_speedlimiter,
+                getString(R.string.hyperCarTitle), getString(R.string.hyperCarText), ActivitySection.BIG));
+        addData(1, R.drawable.bmwe30, R.string.rareCarTitle,
+                R.string.rareCarText, ActivitySection.SMALL);
+        addData(2, R.drawable.dodgechallenger, R.string.muscleCarTitle,
+                R.string.muscleCarText, ActivitySection.MEDIUM);
+        addData(3, R.drawable.fordraptor, R.string.largeCarTitle, R.string.largeCarText,
+                R.layout.card_medium_2);
+        addData(4, R.drawable.regera, R.string.beautifulCarTitle, R.string.beautifulCarText,
+                ActivitySection.SMALL);
 
-        activitiesSection.add(new ActivitySection(4, R.drawable.dodgechallenger,
-                getString(R.string.muscleCarTitle), getString(R.string.muscleCarText),
-                ActivitySection.MEDIUM, ActivitySection.CONTENT_LOWLEFT, ActivitySection.CONTENT_UPLEFT)
-        );
-
+        activitiesSection.get(0).setColorText(cardTextGradients.getDrawable(0));
+        activitiesSection.get(1).setColorText(cardTextGradients.getDrawable(1));
+        activitiesSection.get(2).setColorText(cardTextGradients.getDrawable(2));
+        activitiesSection.get(3).setColorText(cardTextGradients.getDrawable(3));
+        activitiesSection.get(4).setColorText(cardTextGradients.getDrawable(4));
 
         fragments.add(FragmentSlider.newInstance(activitiesSection));
         FragmentStateAdapter fragment = new SliderAdapter(this, fragments);
@@ -93,11 +101,21 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    public ActivitySection addData(int imageResource, int titleResource, int textResource, int size) {
+    public ActivitySection appendData(int id, int imageResource, int titleResource, int textResource, int size) {
+        String title = getString(titleResource);
+        String text = getString(textResource);
+        return new ActivitySection(id, imageResource, title, text, size);
+    }
+    public void addData(int id, int imageResource, int titleResource, int textResource, int size) {
+        String title = getString(titleResource);
+        String text = getString(textResource);
+        activitiesSection.add(new ActivitySection(id, imageResource, title, text, size));
+    }
+    public ActivitySection appendData(int imageResource, int titleResource, int textResource, int size, boolean big) {
         String title = getString(titleResource);
         String text = getString(textResource);
         int newId = ID++;
-        return new ActivitySection(newId, imageResource, title, text, size);
+        return new ActivitySection(newId, imageResource, title, text, size, big);
     }
 
 }

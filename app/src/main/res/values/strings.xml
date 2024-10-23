@@ -13,4 +13,10 @@
     <string name="muscleCarTitle">Muscle Cars</string>
     <string name="muscleCarText">The most\npowerful cars</string>
 
+    <string name="largeCarTitle">Large Cars</string>
+    <string name="largeCarText">Off-road cars</string>
+
+    <string name="beautifulCarTitle">Beautiful Cars</string>
+    <string name="beautifulCarText">Most beautiful cars</string>
+
 </resources>

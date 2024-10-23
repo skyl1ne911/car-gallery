@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="cardContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/marginTopCard</item>
+        <item name="android:layout_marginLeft">@dimen/marginLeftRightCard</item>
+        <item name="android:layout_marginRight">@dimen/marginLeftRightCard</item>
+    </style>
+
+
+    <style name="cardViewStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+        <item name="layout_constraintLeft_toLeftOf">parent</item>
+        <item name="layout_constraintRight_toRightOf">parent</item>
+        <item name="cardCornerRadius">@dimen/cornerRadiusCard</item>
+    </style>
+
+    <style name="cardViewBig" parent="cardViewStyle">
+        <item name="android:layout_height">@dimen/cardBigHeight</item>
+    </style>
+    <style name="cardViewMedium" parent="cardViewStyle">
+        <item name="android:layout_height">@dimen/cardMediumHeight</item>
+    </style>
+    <style name="cardViewSmall" parent="cardViewStyle">
+        <item name="android:layout_height">@dimen/cardSmallHeight</item>
+    </style>
+
+    <style name="cardInnerContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@drawable/card_gradient</item>
+    </style>
+
+    <style name="cardTitle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">@font/abel_regular</item>
+    </style>
+    <style name="cardText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">@font/tomorrow_light</item>
+        <item name="android:alpha">0.8</item>
+    </style>
+
+</resources>

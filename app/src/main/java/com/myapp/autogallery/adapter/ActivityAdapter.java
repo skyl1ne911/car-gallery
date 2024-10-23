@@ -1,6 +1,10 @@
 package com.myapp.autogallery.adapter;
 
 import android.content.Context;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
+import android.graphics.drawable.GradientDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,9 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
@@ -19,157 +20,122 @@ import com.myapp.autogallery.items.ActivitySection;
 
 import java.util.List;
 
-public class ActivityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.CardHolder> {
     private LayoutInflater inflater;
     private Context context;
-    private List<ActivitySection> activitiesSection;
-    private int spanCount = 0;
+    private List<ActivitySection> activitySections;
 
     public ActivityAdapter(Context context, List<ActivitySection> activitiesCard) {
         this.context = context;
         inflater = LayoutInflater.from(context);
-        activitiesSection = activitiesCard;
+        activitySections = activitiesCard;
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View sectionItems;
-
-        switch (viewType) {
-            case 2:
-                sectionItems = inflater.inflate(R.layout.card_big, parent, false);
-                return new BigCardHolder(sectionItems);
-            case 1:
-                sectionItems = inflater.inflate(R.layout.card_medium, parent, false);
-                return new MediumCardHolder(sectionItems);
-            case 0:
-                sectionItems = inflater.inflate(R.layout.card_small, parent, false);
-                return new SmallCardHolder(sectionItems);
-        }
-        throw new RuntimeException("TAG ERROR");
+    public CardHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View sectionItems = inflater.inflate(viewType, parent, false);
+        return new CardHolder(sectionItems);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        BaseCardHolder cardHolder;
-        ConstraintLayout constraintLayout;
-        ConstraintLayout.MarginLayoutParams marginLayoutParams;
+    public void onBindViewHolder(@NonNull CardHolder holder, int position) {
         StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
+
+
+        if (activitySections.get(position).isBig()) layoutParams.setFullSpan(true);
+        holder.bind(activitySections.get(position));
         holder.itemView.setLayoutParams(layoutParams);
+    }
 
-        int leftRightMargin = context.getResources().getDimensionPixelSize(R.dimen.marginLeftRightCard);
-        int topBottomMargin = context.getResources().getDimensionPixelSize(R.dimen.marginTopCard);
+    public GradientDrawable applyGradientDrawable(GradientDrawable gradient, int position) {
+        GradientDrawable gradientDrawable = new GradientDrawable();
+        boolean isLastPosition = position == getItemCount() - 1;
+        boolean isSecondPosition = position == getItemCount() - 2;
+        boolean isBigContent = activitySections.get(position).isBig();
 
-        if (holder instanceof BigCardHolder) {
-            cardHolder = (BigCardHolder) holder;
-            layoutParams.setFullSpan(true);
-            spanCount = 0;
+        if (position == 0 || position == 1)
+            return setGradientForFirstPositions(gradient, isBigContent, position);
+        else
+            gradientDrawable.setColor(gradient.getColors()[1]);
+
+        if (isLastPosition) {
+           gradientDrawable = setGradientForLastPositions(gradient);
         }
-        else if (holder instanceof MediumCardHolder) {
-            cardHolder = (MediumCardHolder) holder;
-            layoutParams.setFullSpan(false);
-            spanCount++;
+        else if (isSecondPosition && position % 2 == 1) {
+            gradientDrawable = setGradientForLastPositions(gradient);
+        }
+        return gradientDrawable;
+    }
+
+    public GradientDrawable setGradientForLastPositions(GradientDrawable gradient) {
+        GradientDrawable gradientDrawable = new GradientDrawable();
+        gradientDrawable.setGradientRadius(500);
+            gradientDrawable.setColors(new int[] {
+                    gradient.getColors()[0],
+                    gradient.getColors()[1]
+            });
+        return gradientDrawable;
+    }
+    public GradientDrawable setGradientForFirstPositions(GradientDrawable gradient, boolean isBig, int position) {
+        GradientDrawable gradientDrawable = new GradientDrawable();
+        gradientDrawable.setColors(new int[] {
+                gradient.getColors()[1],
+                gradient.getColors()[2]
+        });
+        float fullGradient = 500;
+
+        if (position == 0) {
+            if (isBig) gradientDrawable.setGradientRadius(1300);
+            else if (activitySections.get(position + 1).isBig()) gradientDrawable.setGradientRadius(fullGradient); // если 2 элемент большой
+            else gradientDrawable.setGradientRadius(1500); // если 2 элемент маленький или средний
         }
         else {
-            cardHolder = (SmallCardHolder) holder;
-            layoutParams.setFullSpan(false);
-            spanCount++;
+            if (isBig || activitySections.get(position - 1).isBig()) gradientDrawable.setGradientRadius(3000); // если элемент большой или предыдущий элемент большой
+            else gradientDrawable.setGradientRadius(fullGradient); // если элемент маленький или средний и предыдущий элемент маленький или средний
         }
-        cardHolder.bind(activitiesSection, position);
-
-
-        constraintLayout = (ConstraintLayout) cardHolder.itemView.findViewById(R.id.container);
-        if (constraintLayout != null)  {
-            marginLayoutParams = (ViewGroup.MarginLayoutParams) constraintLayout.getLayoutParams();
-            int marginLeft, marginRight;
-            boolean isLastItem = (position == getItemCount() - 1);
-
-            if (spanCount == 0) {
-                marginLeft = leftRightMargin;
-                marginRight = leftRightMargin;
-            }
-            else if (spanCount % 2 == 0) {
-                marginLeft = leftRightMargin / 2;
-                marginRight = leftRightMargin;
-            }
-            else {
-                marginLeft = leftRightMargin;
-                marginRight = leftRightMargin / 2;
-            }
-
-            if (isLastItem) {
-                marginLayoutParams.setMargins(marginLeft, topBottomMargin, marginRight, topBottomMargin);
-            }
-            else {
-                marginLayoutParams.setMarginStart(marginLeft);
-                marginLayoutParams.setMarginEnd(marginRight);
-            }
-            constraintLayout.setLayoutParams(marginLayoutParams);
-        }
+        return gradientDrawable;
     }
+
 
     @Override
     public int getItemCount() {
-        return activitiesSection.size();
+        return activitySections.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        return activitiesSection.get(position).tag;
+        return activitySections.get(position).getTemplate();
     }
 
-    static final class BigCardHolder extends BaseCardHolder {
-        public BigCardHolder(View itemView) {
-            super(itemView, R.id.bigCardImage, R.id.bigCardTitle, R.id.bigCardText);
+    public static final class CardHolder extends RecyclerView.ViewHolder {
+        public ImageView imageId, iconId;
+        public TextView title, text;
+
+        public CardHolder(View itemView) {
+            super(itemView);
+            imageId = itemView.findViewById(R.id.image);
+            iconId = itemView.findViewById(R.id.bigCardIcon);
+            title = itemView.findViewById(R.id.cardTitle);
+            text = itemView.findViewById(R.id.cardText);
         }
 
-    }
+        public void bind(ActivitySection section) {
+            if (section == null) return;
+            imageId.setImageResource(section.getImageId());
+            title.setText(section.getTitle());
+            text.setText(section.getText());
 
-    static final class MediumCardHolder extends BaseCardHolder {
-        public MediumCardHolder(View itemView) {
-            super(itemView, R.id.mediumCardImage, R.id.mediumCardTitle, R.id.mediumCardText);
-        }
-    }
+            if (section.getIconId() != 0)
+                iconId.setImageResource(section.getIconId());
 
-    static final class SmallCardHolder extends BaseCardHolder {
-        public SmallCardHolder(View itemView) {
-            super(itemView, R.id.smallCardImage, R.id.smallCardTitle, R.id.smallCardText);
-        }
-    }
-}
-
-
-abstract class BaseCardHolder extends RecyclerView.ViewHolder {
-    public ImageView imageId;
-    public TextView title, text;
-
-    public BaseCardHolder(View itemView, int imageID, int titleId, int textId) {
-        super(itemView);
-        imageId = itemView.findViewById(imageID);
-        title = itemView.findViewById(titleId);
-        text = itemView.findViewById(textId);
-    }
-
-    public void bind(List<ActivitySection> sections, int position) {
-        ActivitySection activity = sections.get(position);
-        if (activity == null) return;
-
-        imageId.setImageResource(activity.getImageId());
-        title.setText(activity.getTitle());
-        text.setText(activity.getText());
-    }
-
-    public void setPattern(int titlePattern, int textPattern) {
-        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) title.getLayoutParams();
-        ConstraintSet constraintSet = new ConstraintSet();
-
-        switch (titlePattern) {
-            case 0:
-                layoutParams.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID;
-                layoutParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-//                constraintSet.clear(R.id.text);
-                break;
+            if (section.getColors() != null) {
+                Shader shader = new LinearGradient(0, 0, 400, 0,
+                        section.getColors(), null, Shader.TileMode.CLAMP);
+                title.getPaint().setShader(shader);
+                Log.d("shader", String.valueOf(section.getId()));
+            }
         }
     }
 }
+
