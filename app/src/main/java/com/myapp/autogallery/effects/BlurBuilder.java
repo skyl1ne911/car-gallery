@@ -2,14 +2,22 @@ package com.myapp.autogallery.effects;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
+import android.view.View;
+
+import com.myapp.autogallery.adapter.ActivityAdapter;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class BlurBuilder {
     private static final float BITMAP_SCALE = 0.4f;
-    private static final float BLUR_RADIUS = 20f;
+    private static final float BLUR_RADIUS = 7.5f;
 
     public static Bitmap blur(Context context, Bitmap image) {
         int width = Math.round(image.getWidth() * BITMAP_SCALE);
@@ -19,15 +27,12 @@ public class BlurBuilder {
         Bitmap outputBitmap = Bitmap.createBitmap(inputBitmap);
 
         RenderScript rs = RenderScript.create(context);
-        ScriptIntrinsicBlur blurScript = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
-
+        ScriptIntrinsicBlur theIntrinsic = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
         Allocation tmpIn = Allocation.createFromBitmap(rs, inputBitmap);
         Allocation tmpOut = Allocation.createFromBitmap(rs, outputBitmap);
-
-        blurScript.setRadius(BLUR_RADIUS); // радиус размытия
-        blurScript.setInput(tmpIn);
-        blurScript.forEach(tmpOut);
-
+        theIntrinsic.setRadius(BLUR_RADIUS);
+        theIntrinsic.setInput(tmpIn);
+        theIntrinsic.forEach(tmpOut);
         tmpOut.copyTo(outputBitmap);
 
         return outputBitmap;

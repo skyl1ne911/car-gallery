@@ -37,7 +37,6 @@ public class UpperBar extends Fragment {
     private ConstraintLayout tabsLayout;
 
     public static Tabs status = Tabs.ACTIVITIES;
-    boolean moved = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,29 +54,28 @@ public class UpperBar extends Fragment {
         scrollBar = view.findViewById(R.id.scrollBar);
         scrollBarParams = (ConstraintLayout.LayoutParams) scrollBar.getLayoutParams();
 
+        ImageView searchIcon = view.findViewById(R.id.search);
+        TextView inputField = view.findViewById(R.id.inputField);
 
-        if (status.equals(Tabs.DISCOVER))
-            updateTabStats(Tabs.DISCOVER, R.id.discover);
-        else
-            updateTabStats(Tabs.ACTIVITIES, R.id.activities);
 
-        scrollBar.setLayoutParams(scrollBarParams);
+//        if (status.equals(Tabs.DISCOVER)) updateTabStatus(Tabs.DISCOVER, R.id.discover);
+//        else updateTabStatus(Tabs.ACTIVITIES, R.id.activities);
+
 
         textDiscover.setOnClickListener(this::onClick);
         textActivities.setOnClickListener(this::onClick);
+        searchIcon.setOnClickListener(this::onClickSearchButton);
+        inputField.setOnClickListener(this::onClickSearchButton);
 
         return view;
     }
 
-    public void selectTab(Tabs tab) {
+    public void selectTab(Tabs tab, int tabId) {
         ConstraintSet constraintSet = new ConstraintSet();
         status = tab;
-        int tabId = (tab == Tabs.ACTIVITIES) ? R.id.activities : R.id.discover;
-        int pageNumber = tab.number;
 
-        updateTabStats(status, tabId);
-        if (MainActivity.viewPager != null)
-            MainActivity.viewPager.setCurrentItem(pageNumber);
+        updateTabStatus(status, tabId);
+        if (MainActivity.viewPager != null) MainActivity.viewPager.setCurrentItem(status.number);
 
         constraintSet.clone(tabsLayout);
         constraintSet.connect(R.id.scrollBar, ConstraintSet.LEFT, tabId, ConstraintSet.RIGHT, 0);
@@ -89,10 +87,9 @@ public class UpperBar extends Fragment {
 
         TransitionManager.beginDelayedTransition(tabsLayout, transition);
         constraintSet.applyTo(tabsLayout);
-
     }
 
-    public void updateTabStats(Tabs tab, int activityTabId) {
+    public void updateTabStatus(Tabs tab, int activityTabId) {
         float inactiveAlpha = 0.5F, activeAlpha = 1;
 
         textDiscover.setAlpha((tab.equals(Tabs.DISCOVER)) ? activeAlpha : inactiveAlpha);
@@ -104,8 +101,15 @@ public class UpperBar extends Fragment {
         scrollBar.setLayoutParams(scrollBarParams);
     }
 
-
     public void onClick(View view) {
-        selectTab((view.getId() == R.id.discover) ? Tabs.DISCOVER: Tabs.ACTIVITIES);
+        if (view.getId() == R.id.discover) {
+            selectTab(Tabs.DISCOVER, R.id.discover);
+        }
+        else selectTab(Tabs.ACTIVITIES, R.id.activities);
     }
+
+    public void onClickSearchButton(View view) {
+
+    }
+
 }

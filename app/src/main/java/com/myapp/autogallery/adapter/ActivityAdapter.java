@@ -1,24 +1,39 @@
 package com.myapp.autogallery.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.LinearGradient;
+import android.graphics.Outline;
+import android.graphics.RenderEffect;
 import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.myapp.autogallery.R;
+import com.myapp.autogallery.effects.BlurBuilder;
 import com.myapp.autogallery.items.ActivitySection;
 
 import java.util.List;
+
+import eightbitlab.com.blurview.BlurView;
+import eightbitlab.com.blurview.RenderEffectBlur;
+import eightbitlab.com.blurview.RenderScriptBlur;
 
 public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.CardHolder> {
     private LayoutInflater inflater;
@@ -42,10 +57,10 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.CardHo
     public void onBindViewHolder(@NonNull CardHolder holder, int position) {
         StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
 
-
         if (activitySections.get(position).isBig()) layoutParams.setFullSpan(true);
         holder.bind(activitySections.get(position));
         holder.itemView.setLayoutParams(layoutParams);
+
     }
 
     public GradientDrawable applyGradientDrawable(GradientDrawable gradient, int position) {
@@ -111,6 +126,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.CardHo
     public static final class CardHolder extends RecyclerView.ViewHolder {
         public ImageView imageId, iconId;
         public TextView title, text;
+        public BlurView blurView;
 
         public CardHolder(View itemView) {
             super(itemView);
