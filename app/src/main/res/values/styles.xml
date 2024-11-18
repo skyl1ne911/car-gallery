@@ -14,7 +14,7 @@
         <item name="layout_constraintTop_toTopOf">parent</item>
         <item name="layout_constraintLeft_toLeftOf">parent</item>
         <item name="layout_constraintRight_toRightOf">parent</item>
-        <item name="cardCornerRadius">@dimen/cornerRadiusCard</item>
+        <item name="cardCornerRadius">17dp</item>
     </style>
 
     <style name="cardViewBig" parent="cardViewStyle">
@@ -34,7 +34,7 @@
     </style>
 
     <style name="cardTitle">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">20sp</item>
         <item name="android:fontFamily">@font/abel_regular</item>

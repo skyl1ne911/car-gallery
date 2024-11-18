@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DefaultAttributes">
+        <attr name="orientation">
+            <enum name="horizontal" value="0"/>
+            <enum name="vertical" value="1"/>
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="MyLayout">
+        <attr name="count" format="integer"/>
+        
+        <attr name="orientation"/>
+        <attr name="offset_right" format="dimension"/>
+        <attr name="offset_left" format="dimension"/>
+        <attr name="offset_top" format="dimension"/>
+        <attr name="offset_bottom" format="dimension"/>
+
+    </declare-styleable>
+
+    <declare-styleable name="TrapezoidImage">
+        <attr name="resource" format="reference"/>
+
+        <attr name="orientation"/>
+        <attr name="translateX" format="dimension"/>
+        <attr name="translateY" format="dimension"/>
+        <attr name="rotate" format="float"/>
+
+        <attr name="lineSize" format="dimension"/>
+
+        <attr name="color" format="reference|color"/>
+
+    </declare-styleable>
+
+</resources>

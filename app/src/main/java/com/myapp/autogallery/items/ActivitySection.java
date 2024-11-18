@@ -1,8 +1,11 @@
 package com.myapp.autogallery.items;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -17,67 +20,128 @@ public class ActivitySection implements Parcelable {
     public static final int MEDIUM = R.layout.card_medium; // height 235dp
     public static final int BIG = R.layout.card_big; // height 140dp
 
-    private boolean isBig = false;
-    private int template;
+    private final int template;
+    private boolean isBig;
 
-    private int imageId, iconId;
+    private final int image;
+    private final int icon;
     private final int ID;
-    private String title, text;
+    private final String title;
+    private final String text;
+    private int[] gradientColors;
+    private int titleColor, textColor;
 
-    private int[] colors;
+    public Uri uriImage;
+    private Context context;
+    public Bitmap bitmap;
 
-    public ActivitySection(int id, int imageId, String title, String text, int template) {
-        if (template == BIG) isBig = true;
-        ID = id;
-        this.imageId = imageId;
-        this.title = title;
-        this.text = text;
-        this.template = template;
+    private ActivitySection(CardBuilder builder) {
+        ID = builder.id;
+        template = builder.template;
+        image = builder.image;
+        icon = builder.icon;
+        title = builder.title;
+        text = builder.text;
+        isBig = builder.big;
+        textColor = builder.textColor;
+        titleColor = builder.titleColor;
+        context = builder.context;
     }
 
-    public ActivitySection(Context context, int id, int imageId, int titleId, int textId, int template) {
-        ID = id;
-        this.imageId = imageId;
-        this.title = context.getString(titleId);
-        this.text = context.getString(textId);
-        this.template = template;
-        if (template == BIG) isBig = true;
+    public void setTextColor(int color) { textColor = color; }
+    public void setTitleColor(int color) { titleColor = color; }
+    public void setGradient(Drawable gradient) {
+        gradientColors = ((GradientDrawable) gradient).getColors();
     }
 
-    public ActivitySection(int id, int imageId, String title, String text, int template, boolean big) {
-        this(id, imageId, title, text, template);
-        this.isBig = big;
-    }
+    public static class CardBuilder {
+        private final Context context;
+        private int template;
+        private boolean big = true;
+
+        private final int id;
+        private int image, icon;
+        private String title, text;
+        private int textColor = Color.WHITE, titleColor = Color.WHITE;
 
 
-    public ActivitySection(int id, int imageId, int iconId, String title, String text, int template) {
-        this(id, imageId, title, text, template);
-        this.iconId = iconId;
-    }
+        public CardBuilder(Context context, int id) {
+            this.context = context;
+            this.template = ActivitySection.BIG;
+            this.id = id;
+        }
 
-    public ActivitySection(int id, int image, int template) {
-        ID = id;
-        imageId = image;
-        this.template = template;
+        public CardBuilder(Context context, int id, int template) {
+            this.context = context;
+            this.template = template;
+            this.id = id;
+        }
+
+        public CardBuilder setTemplate(int template, boolean isBig) {
+            this.template = template;
+            if (!isBig) big = false;
+            return this;
+        }
+
+        public CardBuilder setImage(int image) {
+            this.image = image;
+            return this;
+        }
+
+        public CardBuilder setIcon(int icon) {
+            this.icon = icon;
+            return this;
+        }
+
+        public CardBuilder setTitle(int title) {
+            this.title = context.getString(title);
+            return this;
+        }
+
+        public CardBuilder setText(int text) {
+            this.text = context.getString(text);
+            return this;
+        }
+
+        public CardBuilder setSize(boolean big) {
+            this.big = big;
+            return this;
+        }
+
+        public CardBuilder setTitleColor(int color) {
+            this.titleColor = color;
+            return this;
+        }
+
+        public CardBuilder setTextColor(int color) {
+            this.textColor = color;
+            return this;
+        }
+
+        public ActivitySection build() {
+            return new ActivitySection(this);
+        }
     }
 
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
         parcel.writeInt(ID);
-        parcel.writeInt(imageId);
-        parcel.writeInt(iconId);
+        parcel.writeInt(image);
+        parcel.writeInt(icon);
         parcel.writeString(title);
         parcel.writeString(text);
         parcel.writeInt(template);
+        parcel.writeParcelable(uriImage, i);
     }
 
     protected ActivitySection(Parcel in) {
-        imageId = in.readInt();
-        iconId = in.readInt();
+        image = in.readInt();
+        icon = in.readInt();
         ID = in.readInt();
         title = in.readString();
         text = in.readString();
         template = in.readInt();
+        uriImage = in.readParcelable(Uri.class.getClassLoader());
     }
 
     public static final Creator<ActivitySection> CREATOR = new Creator<ActivitySection>() {
@@ -92,51 +156,19 @@ public class ActivitySection implements Parcelable {
         }
     };
 
-    public void setColorText(Drawable gradientDrawable) {
-        colors = ((GradientDrawable) gradientDrawable).getColors();
-    }
 
-    public void setImageId(int image) {
-        imageId = image;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setTemplate(int template) {
-        this.template = template;
-    }
-
-    public void setBig(boolean isBig) { this.isBig = isBig; }
-
-    public int getImageId() {
-        return imageId;
-    }
-
-    public int getIconId() { return iconId; }
-
+    public Context getContext() { return context; }
+    public int getImage() { return image; }
+    public int getIcon() { return icon; }
     public int getId() { return ID; }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getText() {
-        return text;
-    }
-
+    public String getTitle() { return title; }
+    public String getText() { return text; }
     public int getTemplate() { return template; }
-
     public boolean isBig() { return isBig; }
-
-    public int[] getColors() { return colors; }
+    public int getTitleColor() { return titleColor; }
+    public int getTextColor() { return textColor; }
+    public int[] getGradientColors() { return gradientColors; }
 
     @Override
     public int describeContents() { return 0; }
-
 }

@@ -1,28 +1,22 @@
 package com.myapp.autogallery;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.MaskFilter;
-import android.graphics.Outline;
+import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.net.Uri;
 import android.os.Bundle;
-import android.renderscript.Allocation;
-import android.renderscript.Element;
-import android.renderscript.RenderScript;
-import android.renderscript.ScriptIntrinsicBlur;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewOutlineProvider;
-import android.widget.FrameLayout;
-import android.widget.TextView;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +24,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -37,18 +32,17 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.myapp.autogallery.adapter.ActivityAdapter;
 import com.myapp.autogallery.adapter.SliderAdapter;
-import com.myapp.autogallery.effects.BlurBuilder;
 import com.myapp.autogallery.fragments.FragmentSlider;
 import com.myapp.autogallery.fragments.LowerBar;
 import com.myapp.autogallery.fragments.UpperBar;
 import com.myapp.autogallery.items.ActivitySection;
+import com.myapp.autogallery.items.TrapezoidImage;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import eightbitlab.com.blurview.BlurView;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -60,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static List<ActivitySection> activitiesSection;
     public static List<ActivitySection> discoverySection;
+
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -76,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.backgroundBar));
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.navigationBar));
 
+
         if (savedInstanceState == null) {
             upperBar = new UpperBar();
             lowerBar = new LowerBar();
@@ -85,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
 
         List<Fragment> fragments = new ArrayList<>();
         activitiesSection = setActivitiesData();
-
 
 
         fragments.add(FragmentSlider.newInstance(activitiesSection));
@@ -126,50 +121,66 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private List<ActivitySection> setActivitiesData() {
-        LayerDrawable cardTextGradients = (LayerDrawable) AppCompatResources.getDrawable(this, R.drawable.card_text_gradient);
+        LayerDrawable gradients = (LayerDrawable) AppCompatResources.getDrawable(this, R.drawable.card_text_gradient);
         List<ActivitySection> activitiesData = new ArrayList<>();
 
-        activitiesData.add(new ActivitySection(0, R.drawable.chiron, R.drawable.icon_speedlimiter,
-                getString(R.string.hyperCarTitle), getString(R.string.hyperCarText), ActivitySection.BIG));
-        activitiesData.add(addData(1, R.drawable.bmwe30, R.string.rareCarTitle,
-                R.string.rareCarText, ActivitySection.SMALL));
-        activitiesData.add(addData(2, R.drawable.dodgechallenger, R.string.muscleCarTitle,
-                R.string.muscleCarText, ActivitySection.MEDIUM));
-        activitiesData.add(addData(3, R.drawable.fordraptor, R.string.largeCarTitle,
-                R.string.largeCarText,
-                R.layout.card_medium_2));
-        activitiesData.add(addData(4, R.drawable.regera, R.string.beautifulCarTitle, R.string.beautifulCarText,
-                ActivitySection.SMALL));
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.bmwm3e30);
 
-        activitiesData.get(0).setColorText(cardTextGradients.getDrawable(0));
-        activitiesData.get(1).setColorText(cardTextGradients.getDrawable(1));
-        activitiesData.get(2).setColorText(cardTextGradients.getDrawable(2));
-        activitiesData.get(3).setColorText(cardTextGradients.getDrawable(3));
-        activitiesData.get(4).setColorText(cardTextGradients.getDrawable(4));
+        activitiesData.add(new ActivitySection.CardBuilder(this, 0)
+
+                .setIcon(R.drawable.icon_speedlimiter)
+                .setTitle(R.string.hyperCarTitle)
+                .setText(R.string.hyperCarText)
+                .build());
+        activitiesData.add(new ActivitySection.CardBuilder(this, 1)
+                .setImage(R.drawable.bmwm3e30)
+                .setTitle(R.string.rareCarTitle)
+                .setText(R.string.rareCarText)
+                .setTemplate(R.layout.card_small, false)
+                .build());
+        activitiesData.add(new ActivitySection.CardBuilder(this, 2)
+                .setImage(R.drawable.dodgechallenger)
+                .setTitle(R.string.muscleCarTitle)
+                .setText(R.string.muscleCarText)
+                .setTemplate(R.layout.card_medium, false)
+                .build());
+        activitiesData.add(new ActivitySection.CardBuilder(this, 3)
+                .setImage(R.drawable.fordf150)
+                .setTitle(R.string.largeCarTitle)
+                .setText(R.string.largeCarText)
+                .setTemplate(R.layout.card_medium_2, false)
+                .build());
+        activitiesData.add(new ActivitySection.CardBuilder(this, 4)
+                .setImage(R.drawable.regera)
+                .setTitle(R.string.beautifulCarTitle)
+                .setText(R.string.beautifulCarText)
+                .setTemplate(R.layout.card_small, false)
+                .build());
+
+
+        activitiesData.get(0).bitmap = bitmap;
+
+
+//        Uri uri = saveBitmap(bitmap);
+//        activitiesData.get(0).uriImage = uri;
 
         return activitiesData;
     }
 
     public List<ActivitySection> setDiscoveryData() {
         List<ActivitySection> discoveryData = new ArrayList<>();
-
 //        discoveryData.add(addData(0, ));
-
-
         return discoveryData;
     }
 
+    public Uri saveBitmap(Bitmap bitmap) {
+        File file = new File(getCacheDir(), "collage.jpg");
+        try(FileOutputStream stream = new FileOutputStream(file)) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            stream.flush();
+        }
+        catch (Exception ex) { }
 
-    public ActivitySection addData(int id, int imageResource, int titleResource, int textResource, int size) {
-        String title = getString(titleResource);
-        String text = getString(textResource);
-        return new ActivitySection(id, imageResource, title, text, size);
+        return FileProvider.getUriForFile(this, "your.package.name.fileprovider", file);
     }
-    public ActivitySection addData(int imageResource, int titleResource, int textResource, int size, boolean big) {
-        String title = getString(titleResource);
-        String text = getString(textResource);
-        int newId = ID++;
-        return new ActivitySection(newId, imageResource, title, text, size, big);
-    }
-
 }
