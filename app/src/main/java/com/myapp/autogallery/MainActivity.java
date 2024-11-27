@@ -1,28 +1,15 @@
 package com.myapp.autogallery;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
@@ -37,7 +24,6 @@ import com.myapp.autogallery.fragments.FragmentSlider;
 import com.myapp.autogallery.fragments.LowerBar;
 import com.myapp.autogallery.fragments.UpperBar;
 import com.myapp.autogallery.items.ActivitySection;
-import com.myapp.autogallery.items.TrapezoidImage;
 
 import java.io.File;
 import java.io.FileOutputStream;

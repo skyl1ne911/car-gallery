@@ -2,13 +2,9 @@ package com.myapp.autogallery.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Shader;
-import android.graphics.drawable.GradientDrawable;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,14 +12,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.myapp.autogallery.R;
 import com.myapp.autogallery.items.ActivitySection;
-import com.myapp.autogallery.items.TrapezoidImage;
 
 import java.io.IOException;
 import java.util.List;
@@ -55,7 +48,6 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.CardHo
     @Override
     public void onBindViewHolder(@NonNull CardHolder holder, int position) {
         StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
-
 
         if (activitySections.get(position).isBig()) layoutParams.setFullSpan(true);
         try {
