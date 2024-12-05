@@ -44,12 +44,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:lineSize="6px"
-                app:rotate="-10"
-                app:orientation="vertical"
+                app:rotate="40"
                 android:background="@color/black"
                 android:scaleType="centerCrop"
                 app:lineStart="bottom"
                 app:from_parent="left"
+                app:translateY="-20dp"
                 android:src="@drawable/porsche911gt3_2"
                 app:layout_constraintRight_toRightOf="parent"/>
 

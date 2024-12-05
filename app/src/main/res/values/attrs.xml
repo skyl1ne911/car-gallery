@@ -22,9 +22,6 @@
 <!--        to display the image    -->
         <attr name="resource" format="reference"/>
 
-<!--        Vertical is default     -->
-        <attr name="orientation"/>
-
 <!--        Positioning setting-->
 <!--            - translateX is the horizontal setting -->
 <!--            - translateY is the vertical setting -->
@@ -34,8 +31,10 @@
         <attr name="rotate" format="float"/>
 
         <attr name="lineStart">
-            <enum name="top" value="0"/>
-            <enum name="bottom" value="1"/>
+            <enum name="left" value="0"/>
+            <enum name="top" value="1"/>
+            <enum name="right" value="2"/>
+            <enum name="bottom" value="3"/>
         </attr>
         <attr name="from_parent">
             <enum name="left" value="0"/>
