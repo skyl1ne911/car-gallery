@@ -51,19 +51,20 @@ public class FragmentSlider extends Fragment {
         adapter = new ActivityAdapter(getContext(), sections, recyclerView);
         recyclerView.setAdapter(adapter);
 
-        view.post(() -> {
-            TextView title1 = adapter.getTextViewAtPosition(0, ActivityAdapter.TITLE);
-            TextView title2 = adapter.getTextViewAtPosition(1, ActivityAdapter.TITLE);
-            TextView title3 = adapter.getTextViewAtPosition(2, ActivityAdapter.TITLE);
-            TextView title4 = adapter.getTextViewAtPosition(3, ActivityAdapter.TITLE);
-            TextView title5 = adapter.getTextViewAtPosition(4, ActivityAdapter.TITLE);
-            assert cardTextGradients != null;
-            setGradientText(title1, cardTextGradients.getDrawable(0));
-            setGradientText(title2, cardTextGradients.getDrawable(1));
-            setGradientText(title3, cardTextGradients.getDrawable(2));
-            setGradientText(title4, cardTextGradients.getDrawable(3));
-            setGradientText(title5, cardTextGradients.getDrawable(4));
-        });
+//        TODO вылет при скролле:
+//        view.post(() -> {
+//            TextView title1 = adapter.getTextViewAtPosition(0, ActivityAdapter.TITLE);
+//            TextView title2 = adapter.getTextViewAtPosition(1, ActivityAdapter.TITLE);
+//            TextView title3 = adapter.getTextViewAtPosition(2, ActivityAdapter.TITLE);
+//            TextView title4 = adapter.getTextViewAtPosition(3, ActivityAdapter.TITLE);
+//            TextView title5 = adapter.getTextViewAtPosition(4, ActivityAdapter.TITLE);
+//            assert cardTextGradients != null;
+//            setGradientText(title1, cardTextGradients.getDrawable(0));
+//            setGradientText(title2, cardTextGradients.getDrawable(1));
+//            setGradientText(title3, cardTextGradients.getDrawable(2));
+//            setGradientText(title4, cardTextGradients.getDrawable(3));
+//            setGradientText(title5, cardTextGradients.getDrawable(4));
+//        });
 
         return view;
     }

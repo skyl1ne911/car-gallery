@@ -30,13 +30,15 @@
         <attr name="translateY" format="dimension"/>
         <attr name="rotate" format="float"/>
 
+
         <attr name="lineStart">
             <enum name="left" value="0"/>
             <enum name="top" value="1"/>
             <enum name="right" value="2"/>
             <enum name="bottom" value="3"/>
+            <enum name="center" value="4"/>
         </attr>
-        <attr name="from_parent">
+        <attr name="from_line">
             <enum name="left" value="0"/>
             <enum name="top" value="1"/>
             <enum name="right" value="2"/>

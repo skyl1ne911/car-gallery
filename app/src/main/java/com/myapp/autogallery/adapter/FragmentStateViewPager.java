@@ -3,19 +3,16 @@ package com.myapp.autogallery.adapter;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-
-import com.myapp.autogallery.R;
-import com.myapp.autogallery.fragments.FragmentSlider;
-import com.myapp.autogallery.items.ActivitySection;
+import androidx.viewpager2.widget.ViewPager2;
 
 import java.util.List;
 
-public class SliderAdapter extends FragmentStateAdapter {
+public class FragmentStateViewPager extends FragmentStateAdapter {
+    private List<Fragment> fragments;;
 
-    private List<Fragment> fragments;
-
-    public SliderAdapter(FragmentActivity fa, List<Fragment> fragments) {
+    public FragmentStateViewPager(Fragment fa, List<Fragment> fragments) {
         super(fa);
         this.fragments = fragments;
     }

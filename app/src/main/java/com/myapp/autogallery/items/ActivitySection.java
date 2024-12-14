@@ -79,7 +79,7 @@ public class ActivitySection implements Parcelable {
 
         public CardBuilder setTemplate(int template, boolean isBig) {
             this.template = template;
-            if (!isBig) big = false;
+            big = isBig;
             return this;
         }
 

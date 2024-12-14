@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,10 +21,12 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.myapp.autogallery.adapter.SliderAdapter;
+import com.myapp.autogallery.adapter.FragmentStateViewPager;
 import com.myapp.autogallery.fragments.FragmentSlider;
+import com.myapp.autogallery.fragments.FragmentViewPager;
 import com.myapp.autogallery.fragments.LowerBar;
 import com.myapp.autogallery.fragments.UpperBar;
+import com.myapp.autogallery.interfaces.ScrollCallback;
 import com.myapp.autogallery.items.ActivitySection;
 
 import java.io.File;
@@ -31,12 +35,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ScrollCallback {
     private int ID = 1;
 
-    public static ViewPager2 viewPager;
     private UpperBar upperBar;
     private LowerBar lowerBar;
+    private FragmentViewPager fragmentPager;
 
     public static List<ActivitySection> activitiesSection;
     public static List<ActivitySection> discoverySection;
@@ -57,53 +61,31 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.backgroundBar));
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.navigationBar));
 
+        activitiesSection = setActivitiesData();
 
         if (savedInstanceState == null) {
+            fragmentPager = FragmentViewPager.newInstance(activitiesSection);
             upperBar = new UpperBar();
             lowerBar = new LowerBar();
+            getSupportFragmentManager().beginTransaction().add(R.id.fragmentViewPager, fragmentPager).commit();
             getSupportFragmentManager().beginTransaction().add(R.id.fragmentUpperBar, upperBar).commit();
             getSupportFragmentManager().beginTransaction().add(R.id.fragmentLowerBar, lowerBar).commit();
         }
+        else {
+            upperBar = (UpperBar) getSupportFragmentManager().findFragmentById(R.id.fragmentUpperBar);
+        }
 
-        List<Fragment> fragments = new ArrayList<>();
-        activitiesSection = setActivitiesData();
 
-
-        fragments.add(FragmentSlider.newInstance(activitiesSection));
-        fragments.add(FragmentSlider.newInstance(activitiesSection));
-        FragmentStateAdapter fragment = new SliderAdapter(this, fragments);
-
-        viewPager = findViewById(R.id.sliderPager);
-        viewPager.setAdapter(fragment);
 //        viewPager.post(() -> viewPager.setCurrentItem(UpperBar.Tabs.ACTIVITIES.getNumber(), false));
-        viewPager.setCurrentItem(UpperBar.Tabs.ACTIVITIES.getNumber(), false);
-        viewPager.registerOnPageChangeCallback(registerPageSelect());
-        viewPager.setOffscreenPageLimit(2);
+//        viewPager.setCurrentItem(UpperBar.Tabs.ACTIVITIES.getNumber(), false);
+//        viewPager.registerOnPageChangeCallback(registerPageSelect());
+//        viewPager.setOffscreenPageLimit(2);
 
 //        BlurView blurView = findViewById(R.id.blurView);
 //        ConstraintLayout constraintLayout = findViewById(R.id.main);
 //        blurView.setupWith(viewPager).setBlurRadius(5f);
-
-    }
-
-    public ViewPager2.OnPageChangeCallback registerPageSelect() {
-        return new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                UpperBar.Tabs selectTab;
-                int tabId;
-                if (position == UpperBar.Tabs.ACTIVITIES.getNumber()) {
-                    selectTab = UpperBar.Tabs.ACTIVITIES;
-                    tabId = R.id.activities;
-                }
-                else {
-                    selectTab = UpperBar.Tabs.DISCOVER;
-                    tabId = R.id.discover;
-                }
-                upperBar.selectTab(selectTab, tabId);
-            }
-        };
+        Log.d("activitiesSection", activitiesSection.getClass().toString());
+        Log.d("MainActivity.log", "onCreate");
     }
 
     private List<ActivitySection> setActivitiesData() {
@@ -113,45 +95,51 @@ public class MainActivity extends AppCompatActivity {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.bmwm3e30);
 
         activitiesData.add(new ActivitySection.CardBuilder(this, 0)
-
                 .setIcon(R.drawable.icon_speedlimiter)
                 .setTitle(R.string.hyperCarTitle)
                 .setText(R.string.hyperCarText)
                 .build());
         activitiesData.add(new ActivitySection.CardBuilder(this, 1)
-                .setImage(R.drawable.bmwm3e30)
-                .setTitle(R.string.rareCarTitle)
-                .setText(R.string.rareCarText)
-                .setTemplate(R.layout.card_small, false)
-                .build());
-        activitiesData.add(new ActivitySection.CardBuilder(this, 2)
-                .setImage(R.drawable.dodgechallenger)
-                .setTitle(R.string.muscleCarTitle)
-                .setText(R.string.muscleCarText)
-                .setTemplate(R.layout.card_medium, false)
-                .build());
-        activitiesData.add(new ActivitySection.CardBuilder(this, 3)
-                .setImage(R.drawable.fordf150)
-                .setTitle(R.string.largeCarTitle)
-                .setText(R.string.largeCarText)
-                .setTemplate(R.layout.card_medium_2, false)
-                .build());
-        activitiesData.add(new ActivitySection.CardBuilder(this, 4)
-                .setImage(R.drawable.regera)
-                .setTitle(R.string.beautifulCarTitle)
-                .setText(R.string.beautifulCarText)
-                .setTemplate(R.layout.card_small, false)
+                .setIcon(R.drawable.icon_speedlimiter)
+                .setTitle(R.string.hyperCarTitle)
+                .setText(R.string.hyperCarText)
+                .setTemplate(R.layout.big_test, true)
                 .build());
 
+//        activitiesData.add(new ActivitySection.CardBuilder(this, 1)
+//                .setImage(R.drawable.bmwm3e30)
+//                .setTitle(R.string.rareCarTitle)
+//                .setText(R.string.rareCarText)
+//                .setTemplate(R.layout.card_small, false)
+//                .build());
+//        activitiesData.add(new ActivitySection.CardBuilder(this, 2)
+//                .setImage(R.drawable.dodgechallenger)
+//                .setTitle(R.string.muscleCarTitle)
+//                .setText(R.string.muscleCarText)
+//                .setTemplate(R.layout.card_medium, false)
+//                .build());
+//        activitiesData.add(new ActivitySection.CardBuilder(this, 3)
+//                .setImage(R.drawable.fordf150)
+//                .setTitle(R.string.largeCarTitle)
+//                .setText(R.string.largeCarText)
+//                .setTemplate(R.layout.card_medium_2, false)
+//                .build());
+//        activitiesData.add(new ActivitySection.CardBuilder(this, 4)
+//                .setImage(R.drawable.regera)
+//                .setTitle(R.string.beautifulCarTitle)
+//                .setText(R.string.beautifulCarText)
+//                .setTemplate(R.layout.card_small, false)
+//                .build());
 
-        activitiesData.get(0).bitmap = bitmap;
 
+//        activitiesData.get(0).bitmap = bitmap;
 
 //        Uri uri = saveBitmap(bitmap);
 //        activitiesData.get(0).uriImage = uri;
 
         return activitiesData;
     }
+
 
     public List<ActivitySection> setDiscoveryData() {
         List<ActivitySection> discoveryData = new ArrayList<>();
@@ -166,7 +154,12 @@ public class MainActivity extends AppCompatActivity {
             stream.flush();
         }
         catch (Exception ex) { }
-
         return FileProvider.getUriForFile(this, "your.package.name.fileprovider", file);
     }
+
+    @Override
+    public void selectedPage(UpperBar.Tabs tab) {
+        if (upperBar != null) upperBar.updateTab(tab);
+    }
+
 }

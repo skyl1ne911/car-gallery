@@ -4,43 +4,54 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 
-import com.myapp.autogallery.MainActivity;
 import com.myapp.autogallery.R;
 
 
 public class UpperBar extends Fragment {
-
     public enum Tabs {
-        DISCOVER(0),
-        ACTIVITIES(1);
+        DISCOVER(0, R.id.discover),
+        ACTIVITIES(1, R.id.activities);
 
-        private final int number;
+        private final int position, id;
 
-        Tabs(int number) { this.number = number; }
+        Tabs(int pos, int id) {
+            this.position = pos;
+            this.id = id;
+        }
 
-        public int getNumber() { return number; }
+        public int getPosition() { return position; }
+        public int getId() { return id; }
     }
 
-    private TextView textDiscover, textActivities;;
+    private TextView textDiscover, textActivities;
     private ImageView scrollBar;
     private ConstraintLayout.LayoutParams scrollBarParams;
     private ConstraintLayout tabsLayout;
 
-    public static Tabs status = Tabs.ACTIVITIES;
+    public Tabs status;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            String enumString = savedInstanceState.getString("tagName");
+            status = Tabs.valueOf(enumString);
+        }
+        else {
+            status = Tabs.ACTIVITIES;
+        }
+        Log.d("UpperBar_status", status.name());
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -57,59 +68,52 @@ public class UpperBar extends Fragment {
         ImageView searchIcon = view.findViewById(R.id.search);
         TextView inputField = view.findViewById(R.id.inputField);
 
-
-//        if (status.equals(Tabs.DISCOVER)) updateTabStatus(Tabs.DISCOVER, R.id.discover);
-//        else updateTabStatus(Tabs.ACTIVITIES, R.id.activities);
-
-
         textDiscover.setOnClickListener(this::onClick);
         textActivities.setOnClickListener(this::onClick);
-        searchIcon.setOnClickListener(this::onClickSearchButton);
-        inputField.setOnClickListener(this::onClickSearchButton);
+//        searchIcon.setOnClickListener(this::onClickSearchButton);
+//        inputField.setOnClickListener(this::onClickSearchButton);
 
+        updateTab(status);
         return view;
     }
 
-    public void selectTab(Tabs tab, int tabId) {
-        ConstraintSet constraintSet = new ConstraintSet();
-        status = tab;
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("tagName", status.name());
+        Log.d("UpperBar.onSaveInstanceState", status.name());
+    }
 
-        updateTabStatus(status, tabId);
-        if (MainActivity.viewPager != null) MainActivity.viewPager.setCurrentItem(status.number);
-
-        constraintSet.clone(tabsLayout);
-        constraintSet.connect(R.id.scrollBar, ConstraintSet.LEFT, tabId, ConstraintSet.RIGHT, 0);
-        constraintSet.connect(R.id.scrollBar, ConstraintSet.LEFT, tabId, ConstraintSet.LEFT, 0);
-
+    public void selectTab(int position) {
+        if (FragmentViewPager.viewPager != null)
+            FragmentViewPager.viewPager.setCurrentItem(position);
 
         AutoTransition transition = new AutoTransition();
         transition.setDuration(200);
-
         TransitionManager.beginDelayedTransition(tabsLayout, transition);
-        constraintSet.applyTo(tabsLayout);
     }
 
-    public void updateTabStatus(Tabs tab, int activityTabId) {
+    public void updateTab(Tabs tab) {
         float inactiveAlpha = 0.5F, activeAlpha = 1;
 
-        textDiscover.setAlpha((tab.equals(Tabs.DISCOVER)) ? activeAlpha : inactiveAlpha);
-        textActivities.setAlpha((tab.equals(Tabs.ACTIVITIES)) ? activeAlpha : inactiveAlpha);
+        textDiscover.setAlpha(tab.id == Tabs.DISCOVER.id ? activeAlpha : inactiveAlpha);
+        textActivities.setAlpha(tab.id == Tabs.ACTIVITIES.id ? activeAlpha : inactiveAlpha);
 
-        scrollBarParams.rightToRight = activityTabId;
-        scrollBarParams.leftToLeft = activityTabId;
-
+        scrollBarParams.rightToRight = tab.id;
+        scrollBarParams.leftToLeft = tab.id;
         scrollBar.setLayoutParams(scrollBarParams);
+
+        if (tab != status) status = tab;
+        selectTab(tab.position);
     }
 
     public void onClick(View view) {
-        if (view.getId() == R.id.discover) {
-            selectTab(Tabs.DISCOVER, R.id.discover);
-        }
-        else selectTab(Tabs.ACTIVITIES, R.id.activities);
+        if (view.getId() == Tabs.DISCOVER.id) status = Tabs.DISCOVER;
+        else status = Tabs.ACTIVITIES;
+        updateTab(status);
     }
 
     public void onClickSearchButton(View view) {
-
+        // TODO
     }
-
 }
