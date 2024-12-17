@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
@@ -17,12 +16,7 @@ import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.fragment.app.Fragment;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
 
-import com.myapp.autogallery.adapter.FragmentStateViewPager;
-import com.myapp.autogallery.fragments.FragmentSlider;
 import com.myapp.autogallery.fragments.FragmentViewPager;
 import com.myapp.autogallery.fragments.LowerBar;
 import com.myapp.autogallery.fragments.UpperBar;
@@ -153,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements ScrollCallback {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             stream.flush();
         }
-        catch (Exception ex) { }
+        catch (Exception ignored) { }
         return FileProvider.getUriForFile(this, "your.package.name.fileprovider", file);
     }
 

@@ -16,16 +16,33 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewParent;
 
+import androidx.annotation.IntDef;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import com.myapp.autogallery.R;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 public class CollageImageView extends AppCompatImageView {
+    public final static int VERTICAL = 0;
+    public final static int HORIZONTAL = 1;
+
     public final static int LEFT = 0;
     public final static int TOP = 1;
     public final static int RIGHT = 2;
     public final static int BOTTOM = 3;
     public final static int CENTER = 4;
+
+    @IntDef({VERTICAL, HORIZONTAL})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Orientation {}
+    private int lineOrientation;
+
+    @IntDef({LEFT, TOP, RIGHT, BOTTOM, CENTER})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Sides {}
+    private int lineStart, byParent, lineRotateSide;
 
     private Path transformedShape;
     private Path transformedLine;
@@ -36,16 +53,17 @@ public class CollageImageView extends AppCompatImageView {
     private Matrix matrix;
     private Bitmap dec;
 
-    private int lineStart, parentSide;
     private int resource;
     private int translateX, translateY;
     private int lineSize, lineColor;
     private float rotateDegrees;
 
     private int bitmapWidth, bitmapHeight;
-    private float viewWidth, viewHeight;
+    private int viewWidth, viewHeight;
 
     private float[] lineCoords;
+
+    private final String CLASS_NAME = getClass().getName();
 
     public CollageImageView(Context context, Bitmap bitmap) {
         super(context);
@@ -69,8 +87,10 @@ public class CollageImageView extends AppCompatImageView {
             translateY = attr.getDimensionPixelOffset(R.styleable.CollageImageView_translateY, 0);
             rotateDegrees = attr.getFloat(R.styleable.CollageImageView_rotate, 0);
             lineSize = attr.getDimensionPixelOffset(R.styleable.CollageImageView_lineSize, 0);
-            lineStart = attr.getInt(R.styleable.CollageImageView_lineStart, 1);
-            parentSide = attr.getInt(R.styleable.CollageImageView_from_line, 0);
+            lineOrientation = attr.getInt(R.styleable.CollageImageView_lineOrientation, VERTICAL);
+            byParent = attr.getInt(R.styleable.CollageImageView_from_line, LEFT);
+            lineRotateSide = attr.getInt(R.styleable.CollageImageView_rotateSide, CENTER);
+            lineStart = attr.getInt(R.styleable.CollageImageView_lineStart, -1);
 
             if (type == TypedValue.TYPE_REFERENCE)
                 lineColor = attr.getResourceId(R.styleable.CollageImageView_color, Color.WHITE);
@@ -90,45 +110,27 @@ public class CollageImageView extends AppCompatImageView {
         int parentHeight = ((View) parent).getHeight();
 
         float startX = translateX, startY = translateY;
-//        rotateDegrees = getCorrectDegrees();
+        if (lineRotateSide != CENTER) rotateDegrees = getCorrectDegrees();
 
-        if (viewWidth == parentWidth && (lineStart == TOP || lineStart == BOTTOM)) {
-            if (lineStart == BOTTOM) startY += viewHeight;
-            startX += viewWidth / 2;
+        if (lineStart != -1) {
+            startX += getVerticalLineStart();
+            startY += getHorizontalLineStart();
         }
-        else if (viewHeight == parentHeight && (lineStart == LEFT || lineStart == RIGHT)) {
-            if (lineStart == RIGHT) startX += viewWidth;
-            startY += viewHeight / 2;
+        else {
+            startX += getDefaultVerticalLineStart(parentWidth);
+            startY += getDefaultHorizontalLineStart(parentHeight);
         }
 
         transformedLine = drawLine(startX, startY);
         setRotateLine(transformedLine, rotateDegrees);
         transformedShape = drawShape(startX, startY);
-//        setMatrixShape(transformedShape, rotateDegrees);
+        setMatrixShape(transformedShape, rotateDegrees);
 
         paint.setStrokeWidth(lineSize);
         paint.setColor(lineColor);
 
-        Log.d("degrees", String.valueOf(rotateDegrees));
-        Log.d("startX | startY", String.format("X: %.2f Y: %d", startX, 0));
-    }
-
-
-    protected void setScaleType() {
-        if (resource != 0) {
-            matrix = new Matrix();
-
-            float scaleX = viewWidth / bitmapWidth;
-            float scaleY = viewHeight / bitmapHeight;
-            float scale = Math.min(scaleY, scaleX);
-
-            float dx = (viewWidth - bitmapWidth * scale) / 2;
-            float dy = (viewHeight - bitmapHeight * scale) / 2;
-
-            matrix.reset();
-            matrix.postScale(scale, scale);
-            matrix.postTranslate(translateX + dx, translateY + dy);
-        }
+        Log.d(CLASS_NAME + " init.degrees", String.valueOf(rotateDegrees));
+        Log.d(CLASS_NAME + " init.[startX | startY]", String.format("X: %.2f Y: %d", startX, 0));
     }
 
     @Override
@@ -141,7 +143,7 @@ public class CollageImageView extends AppCompatImageView {
 //        transformedLine.close();
 //        transformedShape.close();
 
-        Log.d("CollageImageView", "onDraw");
+        Log.d(CLASS_NAME, "onDraw");
         if (resource != 0) canvas.drawBitmap(dec, matrix, null);
     }
 
@@ -159,52 +161,49 @@ public class CollageImageView extends AppCompatImageView {
         shape.lineTo(0, viewHeight);
     }
 
-    public Path drawLine(float x, float y) {
+    public Path drawLine(float startX, float startY) {
         Path line = new Path();
         Matrix matrix = new Matrix();
 
-        float lineScaleY = (viewWidth + translateX) / (viewHeight + translateY) * 2;
-        float centerY = viewHeight / 2;
+        float lineScaleY = (float) (viewWidth + translateX) / (viewHeight + translateY) * 4;
+        float centerY = (float) (viewHeight / 2 - lineSize / 2);
         initializeLine(line);
 
-        if (lineStart == RIGHT || lineStart == LEFT) {
-            matrix.setRotate(-90);
-            matrix.postTranslate(0, y);
-        }
-        else matrix.setTranslate(x, 0);
 
-        matrix.preScale(1, lineScaleY, 0, centerY);
+        matrix.setScale(1, lineScaleY, 0, centerY);
+        if (lineOrientation == HORIZONTAL) matrix.postRotate(-90);
+
+        matrix.postTranslate(startX, startY);
         line.transform(matrix);
 
         PathMeasure pathMeasure = new PathMeasure(line, false);
         pathMeasure.getPosTan(pathMeasure.getLength(), lineCoords, null);
-
-        Log.d("coords", lineCoords[0] + " " + lineCoords[1]);
+        Log.d(CLASS_NAME + " drawLine.coords", lineCoords[0] + " " + lineCoords[1]);
         return line;
     }
 
-    public Path drawShape(float x, float y) {
+    public Path drawShape(float startX, float startY) {
         Path shape = new Path();
         Matrix matrix = new Matrix();
         float[] shapeCoords = {1, 1, 1, 1};
 
         initializeShape(shape);
 
-        switch (parentSide) {
+        switch (byParent) {
             case LEFT:
-                shapeCoords[0] = x / viewWidth;
+                shapeCoords[0] = startX / viewWidth;
                 shapeCoords[2] = 0;
                 break;
             case RIGHT:
-                shapeCoords[0] = 1 - x / viewWidth;
+                shapeCoords[0] = 1 - startX / viewWidth;
                 shapeCoords[2] = viewWidth;
                 break;
             case TOP:
-                shapeCoords[1] = y / viewHeight;
+                shapeCoords[1] = startY / viewHeight;
                 shapeCoords[3] = 0;
                 break;
             case BOTTOM:
-                shapeCoords[1] = 1 - y / viewHeight;
+                shapeCoords[1] = 1 - startY / viewHeight;
                 shapeCoords[3] = viewHeight;
                 break;
         }
@@ -215,68 +214,80 @@ public class CollageImageView extends AppCompatImageView {
 
     public void setRotateLine(Path path, float degrees) {
         if (degrees == 0) return;
-
         Matrix matrix = new Matrix();
-        float px = (lineStart == LEFT) ? 0 : viewWidth;
-        float py = (lineStart == TOP) ? 0 : viewHeight;
+        float[] pivot = getMatrixRotate();
 
-        if (lineStart == TOP || lineStart == BOTTOM) {
-            matrix.postRotate(degrees, lineCoords[0], viewHeight / 2);
-        }
-        else {
-            matrix.postRotate(degrees, viewWidth / 2, lineCoords[1]);
-        }
-
-//        if (lineStart == TOP || lineStart == BOTTOM)
-//            matrix.postRotate(degrees, lineCoords[0], py);
-//        else
-//            matrix.postRotate(degrees, px, lineCoords[1]);
-
+        matrix.postRotate(degrees, pivot[0], pivot[1]);
         path.transform(matrix);
     }
 
     public void setMatrixShape(Path path, float degrees) {
+        if (degrees == 0) return;
         Matrix matrix = new Matrix();
-        float px = lineCoords[0];
-        float py = lineCoords[1];
         float radians = (float) Math.toRadians(degrees);
-        float kx = (float) Math.tan(radians);
-        if (degrees % 90 == 0) kx = 0;
-        float scaleX = (float) Math.sqrt(viewWidth / viewHeight * 2 + kx * kx);
-//
-//        if (parentSide == RIGHT || parentSide == BOTTOM) scaleX = -scaleX;
-//        if (lineStart == TOP || lineStart == BOTTOM) {
-//            if (lineStart == TOP) py = 0;
-//            matrix.setScale(scaleX, 1, px, py);
-//            matrix.postSkew(-kx, 0, px, py);
-//        }
-//        else {
-//            if (lineStart == LEFT) px = 0;
-//            matrix.setScale(1, scaleX, px, py);
-////            matrix.preTranslate(0, translateY);
-//            matrix.postSkew(0, kx, px, py);
-//        }
+        float kx = (degrees % 90 == 0) ? 0 : (float) Math.tan(radians);
+        float scaleX = 1 + (float) Math.sqrt(viewWidth / viewHeight * 2 + kx * kx);
+        float[] pivot = getMatrixRotate();
 
-        if (parentSide == LEFT) {
-            if (degrees % 90 == 0) {
-                if (degrees < 0) {
-                    for (float i = degrees; i < 0; i += 90)
-                        matrix.preRotate(-90, lineCoords[0], viewHeight / 2);
-                }
-                else {
-                    for (float i = 0; i < degrees; i += 90)
-                        matrix.preRotate(90, lineCoords[0], viewHeight / 2);
-                }
-            }
-            else if (degrees > 90 || degrees < -90) {
-                matrix.preScale(-scaleX, scaleX, lineCoords[0], 0);
-            }
-            matrix.preScale(-scaleX, scaleX, lineCoords[0], viewHeight / 2);
-            matrix.postSkew(-kx, 0, lineCoords[0], viewHeight / 2);
-        }
+        matrix.setScale(scaleX, scaleX, pivot[0], pivot[1]);
+
+        if (degrees % 90 == 0)
+            matrix.postRotate(degrees, pivot[0], pivot[1]);
+
+        float skewX = (lineOrientation == VERTICAL) ? -kx : 0;
+        float skewY = (lineOrientation == VERTICAL) ? 0 : kx;
+        matrix.postSkew(skewX, skewY, pivot[0], pivot[1]);
 
         path.transform(matrix);
-        Log.d("kx", String.valueOf(kx));
+        Log.d(CLASS_NAME + " setMatrixShape.kx", String.valueOf(kx));
+        Log.d(CLASS_NAME + " setMatrixShape.scaleX", String.valueOf(scaleX));
+    }
+
+    protected float[] getMatrixRotate() {
+        float[] start = new float[2];
+        start[0] = lineCoords[0];
+        start[1] = lineCoords[1];
+
+        if (lineOrientation == VERTICAL)
+            start[1] = getVerticalLineRotation();
+        else
+            start[0] = getHorizontalLineRotation();
+
+        return start;
+    }
+
+    private float getDefaultVerticalLineStart(float pw) { // PARENT WIDTH
+        if (viewWidth == pw && lineOrientation == VERTICAL) return viewWidth / 2;
+        return 0;
+    }
+
+    private float getDefaultHorizontalLineStart(float ph) { // PARENT HEIGHT
+        if (viewHeight == ph && lineOrientation == HORIZONTAL) return viewHeight / 2;
+        return 0;
+    }
+
+    private float getVerticalLineStart() {
+        if (lineStart == LEFT) return 0;
+        if (lineStart == RIGHT) return viewWidth - lineSize;
+        return viewWidth / 2; // CENTER
+    }
+
+    private float getHorizontalLineStart() {
+        if (lineStart == TOP) return lineSize;
+        if (lineStart == BOTTOM) return viewHeight;
+        return viewHeight / 2 - (float) lineSize / 2; // CENTER
+    }
+
+    private float getVerticalLineRotation() {
+        if (lineRotateSide == TOP) return 0;
+        if (lineRotateSide == BOTTOM) return viewHeight;
+        return viewHeight / 2; // CENTER
+    }
+
+    private float getHorizontalLineRotation() {
+        if (lineRotateSide == LEFT) return 0;
+        if (lineRotateSide == RIGHT) return viewWidth;
+        return viewWidth / 2; // CENTER
     }
 
     @Override
@@ -285,13 +296,13 @@ public class CollageImageView extends AppCompatImageView {
         viewWidth = w;
         viewHeight = h;
         if (oldw != w || oldh != h) {
-            setLineStart(lineStart);
+            setLineTranslate(lineOrientation);
 //            setScaleType();
             init();
         }
-        Log.d("viewSizeX", " " + viewWidth);
-        Log.d("viewSizeY", " " + viewHeight);
-        Log.d("CollageImageView", "onSizeChanged");
+        Log.d(CLASS_NAME + " onSizeChanged.viewWidth", " " + viewWidth);
+        Log.d(CLASS_NAME + " onSizeChanged.viewHeight", " " + viewHeight);
+        Log.d(CLASS_NAME, "onSizeChanged");
     }
 
     @Override
@@ -307,11 +318,10 @@ public class CollageImageView extends AppCompatImageView {
         else
             setMeasuredDimension(parentWidth, parentHeight);
 
-
-        Log.d("parentX", String.valueOf(parentWidth));
-        Log.d("parentY", String.valueOf(parentHeight));
+        Log.d(CLASS_NAME + " onMeasure.parentX", String.valueOf(parentWidth));
+        Log.d(CLASS_NAME + " onMeasure.parentY", String.valueOf(parentHeight));
         Log.d("bitmapSize", String.format("w: %d  h: %d", bitmapWidth, bitmapHeight));
-        Log.d("CollageImageView", "onMeasure");
+        Log.d(CLASS_NAME, "onMeasure");
     }
 
     protected boolean setViewSize() {
@@ -323,17 +333,60 @@ public class CollageImageView extends AppCompatImageView {
         return true;
     }
 
-    public void setLineStart(int lineStart) {
-        if (lineStart == TOP || lineStart == BOTTOM) translateY = 0;
+    protected void setScaleType() {
+        if (resource == 0) return;
+        matrix = new Matrix();
+
+        float scaleX = viewWidth / bitmapWidth;
+        float scaleY = viewHeight / bitmapHeight;
+        float scale = Math.min(scaleY, scaleX);
+
+        float dx = (viewWidth - bitmapWidth * scale) / 2;
+        float dy = (viewHeight - bitmapHeight * scale) / 2;
+
+        matrix.reset();
+        matrix.postScale(scale, scale);
+        matrix.postTranslate(translateX + dx, translateY + dy);
+    }
+
+    public void setLineTranslate(int lineOrientation) {
+        if (lineOrientation == VERTICAL) translateY = 0;
         else translateX = 0;
     }
 
     private float getCorrectDegrees() {
         float degrees = rotateDegrees;
-        if (degrees >= 90) degrees -= 90;
-        else if (degrees <= -90) degrees += 90;
+        if (degrees >= 90) {
+            for (float i = degrees; i >= 0; i -= 90) {
+                degrees = i;
+                Log.d(CLASS_NAME + " getCorrectDegrees", String.valueOf(degrees));
+            }
+        }
+        else if (degrees <= -90) {
+            for (float i = degrees; i <= 0; i += 90) {
+                degrees = i;
+                Log.d(CLASS_NAME + " getCorrectDegrees", String.valueOf(degrees));
+            }
+        }
         return degrees;
     }
 
+    public void setTranslateX(int x) { translateX = x; }
+
+    public void setTranslateY(int y) { translateY = y; }
+
+    public void setRotateDegrees(float degrees) { rotateDegrees = degrees; }
+
+    public void setLineSize(int size) { lineSize = size; }
+
+    public void setLineStart(@Sides int side) { lineStart = side; }
+
+    public void setRotateSide(@Sides int side) { byParent = side; }
+
+    public void setLineOrientation(@Orientation int orientation) { lineOrientation = orientation; }
+
+    public void setLineRotateSide(@Sides int turnSide) { lineRotateSide = turnSide; }
+
+    public void setLineColor(int color) { lineColor = color; }
 }
 

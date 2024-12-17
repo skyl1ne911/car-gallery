@@ -30,8 +30,19 @@
         <attr name="translateY" format="dimension"/>
         <attr name="rotate" format="float"/>
 
-
+<!--        lineStart is where the line will be drawn from by default from the CENTER-->
         <attr name="lineStart">
+            <enum name="left" value="0"/>
+            <enum name="top" value="1"/>
+            <enum name="right" value="2"/>
+            <enum name="bottom" value="3"/>
+            <enum name="center" value="4"/>
+        </attr>
+        <attr name="lineOrientation">
+            <enum name="vertical" value="0"/>
+            <enum name="horizontal" value="1"/>
+        </attr>
+        <attr name="rotateSide">
             <enum name="left" value="0"/>
             <enum name="top" value="1"/>
             <enum name="right" value="2"/>

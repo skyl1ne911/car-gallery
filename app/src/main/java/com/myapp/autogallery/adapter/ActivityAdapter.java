@@ -56,7 +56,6 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.CardHo
             throw new RuntimeException(e);
         }
         holder.itemView.setLayoutParams(layoutParams);
-
     }
 
     public TextView getTextViewAtPosition(int position, int typeTextView) {
@@ -77,6 +76,15 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.CardHo
     @Override
     public int getItemViewType(int position) {
         return activitySections.get(position).getTemplate();
+    }
+
+    public ActivitySection getItem(int index) {
+        return activitySections.get(index);
+    }
+
+    public void updateItem(int index, ActivitySection updatedItem) {
+        activitySections.set(index, updatedItem);
+        notifyItemChanged(index);
     }
 
     public static final class CardHolder extends RecyclerView.ViewHolder {

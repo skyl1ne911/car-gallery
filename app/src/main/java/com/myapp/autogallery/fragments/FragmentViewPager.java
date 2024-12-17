@@ -71,7 +71,6 @@ public class FragmentViewPager extends Fragment {
         return view;
     }
 
-
     public ViewPager2.OnPageChangeCallback registerPageSelect() {
         return new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -88,6 +87,4 @@ public class FragmentViewPager extends Fragment {
             }
         };
     }
-
-
 }

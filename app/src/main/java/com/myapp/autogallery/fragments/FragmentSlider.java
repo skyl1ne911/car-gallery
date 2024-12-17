@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,12 +45,19 @@ public class FragmentSlider extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.slider_upperbar, container, false);
+        View view = inflater.inflate(R.layout.slider_recyclerview, container, false);
         RecyclerView recyclerView = view.findViewById(R.id.recyclerSectionActivities);
         LayerDrawable cardTextGradients = (LayerDrawable) AppCompatResources.getDrawable(getContext(), R.drawable.card_text_gradient);
 
         adapter = new ActivityAdapter(getContext(), sections, recyclerView);
         recyclerView.setAdapter(adapter);
+
+//       recyclerView.post(() -> {
+//            ActivitySection sect = adapter.getItem(1);
+//            TextView text = view.findViewById(R.id.cardText);
+//
+//            Log.d(getClass().getName(), text);
+//       });
 
 //        TODO вылет при скролле:
 //        view.post(() -> {
@@ -71,7 +79,7 @@ public class FragmentSlider extends Fragment {
 
     public void setGradientText(TextView textView, Drawable layerDrawable) {
         GradientDrawable gradient = (GradientDrawable) layerDrawable;
-        Shader shader =  new LinearGradient(textView.getWidth() / 2, 0, textView.getWidth(), 0,
+        Shader shader =  new LinearGradient(textView.getWidth() >> 1, 0, textView.getWidth(), 0,
                 gradient.getColors(), null, Shader.TileMode.CLAMP);
         textView.getPaint().setShader(shader);
         textView.invalidate();
