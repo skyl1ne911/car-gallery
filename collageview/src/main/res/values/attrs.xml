@@ -1,23 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="DefaultAttributes">
-        <attr name="orientation">
-            <enum name="vertical" value="0"/>
-            <enum name="horizontal" value="1"/>
-        </attr>
-    </declare-styleable>
-
-
-    <declare-styleable name="MyLayout">
-        <attr name="count" format="integer"/>
-
-        <attr name="orientation"/>
-        <attr name="offset_right" format="dimension"/>
-        <attr name="offset_left" format="dimension"/>
-        <attr name="offset_top" format="dimension"/>
-        <attr name="offset_bottom" format="dimension"/>
-    </declare-styleable>
-
     <declare-styleable name="CollageImageView">
 <!--        to display the image    -->
         <attr name="resource" format="reference"/>
@@ -31,7 +13,7 @@
         <attr name="rotate" format="float"/>
 
 <!--        lineStart is where the line will be drawn from by default from the CENTER-->
-        <attr name="lineStart">
+        <attr name="lineDrawStart">
             <enum name="left" value="0"/>
             <enum name="top" value="1"/>
             <enum name="right" value="2"/>

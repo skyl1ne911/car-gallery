@@ -1,4 +1,4 @@
-package com.myapp.autogallery.items;
+package com.myapp.collageview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -18,16 +18,19 @@ import android.view.ViewParent;
 
 import androidx.annotation.IntDef;
 import androidx.appcompat.widget.AppCompatImageView;
-
-import com.myapp.autogallery.R;
+import androidx.core.content.ContextCompat;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 public class CollageImageView extends AppCompatImageView {
+    private final String CLASS_NAME = getClass().getName();
+
+    // line orientation
     public final static int VERTICAL = 0;
     public final static int HORIZONTAL = 1;
 
+    // line start, line parent side, line rotate side
     public final static int LEFT = 0;
     public final static int TOP = 1;
     public final static int RIGHT = 2;
@@ -42,11 +45,12 @@ public class CollageImageView extends AppCompatImageView {
     @IntDef({LEFT, TOP, RIGHT, BOTTOM, CENTER})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Sides {}
-    private int lineStart, byParent, lineRotateSide;
+    private int lineStart, resourceByLine, lineRotateSide;
 
     private Path transformedShape;
     private Path transformedLine;
 
+    private Context context;
     private Bitmap bitmap;
     private Paint paint;
     private Path secondImage;
@@ -62,12 +66,13 @@ public class CollageImageView extends AppCompatImageView {
     private int viewWidth, viewHeight;
 
     private float[] lineCoords;
-
-    private final String CLASS_NAME = getClass().getName();
+    private AttributeSet attrs;
 
     public CollageImageView(Context context, Bitmap bitmap) {
         super(context);
         this.bitmap = bitmap;
+        this.context = context;
+        defaultInit();
     }
 
     public CollageImageView(Context context, AttributeSet attrs) {
@@ -76,11 +81,11 @@ public class CollageImageView extends AppCompatImageView {
         setLayerType(View.LAYER_TYPE_HARDWARE, null);
     }
 
-    public void setAttrs(Context context, AttributeSet attrs) {
+    private void setAttrs(Context context, AttributeSet attrs) {
         if (attrs != null) {
+            this.attrs = attrs;
             TypedArray attr = context.obtainStyledAttributes(attrs, R.styleable.CollageImageView);
             int type = attr.getType(R.styleable.CollageImageView_color);
-            lineCoords = new float[2];
 
             resource = attr.getResourceId(R.styleable.CollageImageView_resource, 0);
             translateX = attr.getDimensionPixelOffset(R.styleable.CollageImageView_translateX, 0);
@@ -88,9 +93,9 @@ public class CollageImageView extends AppCompatImageView {
             rotateDegrees = attr.getFloat(R.styleable.CollageImageView_rotate, 0);
             lineSize = attr.getDimensionPixelOffset(R.styleable.CollageImageView_lineSize, 0);
             lineOrientation = attr.getInt(R.styleable.CollageImageView_lineOrientation, VERTICAL);
-            byParent = attr.getInt(R.styleable.CollageImageView_from_line, LEFT);
+            resourceByLine = attr.getInt(R.styleable.CollageImageView_from_line, LEFT);
             lineRotateSide = attr.getInt(R.styleable.CollageImageView_rotateSide, CENTER);
-            lineStart = attr.getInt(R.styleable.CollageImageView_lineStart, -1);
+            lineStart = attr.getInt(R.styleable.CollageImageView_lineDrawStart, -1);
 
             if (type == TypedValue.TYPE_REFERENCE)
                 lineColor = attr.getResourceId(R.styleable.CollageImageView_color, Color.WHITE);
@@ -100,6 +105,45 @@ public class CollageImageView extends AppCompatImageView {
             attr.recycle();
         }
     }
+
+    protected void defaultInit() {
+        lineOrientation = VERTICAL;
+        lineColor = Color.WHITE;
+        lineStart = -1;
+        resourceByLine = LEFT;
+        lineRotateSide = CENTER;
+    }
+
+    protected void init(Context context) {
+        setScaleType(ScaleType.CENTER_CROP);
+        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        transformedLine = new Path();
+        transformedShape = new Path();
+        ViewParent parent = getParent();
+        int parentWidth = ((View) parent).getWidth();
+        int parentHeight = ((View) parent).getHeight();
+
+        float startX = translateX, startY = translateY;
+        if (lineRotateSide != CENTER) rotateDegrees = getCorrectDegrees();
+
+        if (lineStart != -1) {
+            startX += getVerticalLineStart();
+            startY += getHorizontalLineStart();
+        }
+        else {
+            startX += getDefaultVerticalLineStart(parentWidth);
+            startY += getDefaultHorizontalLineStart(parentHeight);
+        }
+
+        transformedLine = drawLine(startX, startY);
+        setRotateLine(transformedLine, rotateDegrees);
+        transformedShape = drawShape(startX, startY);
+        setMatrixShape(transformedShape, rotateDegrees);
+
+        paint.setStrokeWidth(lineSize);
+        paint.setColor(lineColor);
+    }
+
 
     protected void init() {
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -135,10 +179,16 @@ public class CollageImageView extends AppCompatImageView {
 
     @Override
     public void onDraw(Canvas canvas) {
-        canvas.drawPath(transformedLine, paint);
-        canvas.clipPath(transformedShape);
         super.onDraw(canvas);
-        canvas.drawPath(transformedLine, paint);
+
+        Bitmap bitmap = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(),
+                Bitmap.Config.ARGB_8888);
+//        Canvas newCan = new Canvas(bitmap);
+//        newCan.drawPath(transformedLine, paint);
+//        newCan.clipPath(transformedShape);
+//        newCan.drawBitmap(this.bitmap, 0, 0, null);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+//        canvas.drawPath(transformedLine, paint);
 
 //        transformedLine.close();
 //        transformedShape.close();
@@ -164,6 +214,7 @@ public class CollageImageView extends AppCompatImageView {
     public Path drawLine(float startX, float startY) {
         Path line = new Path();
         Matrix matrix = new Matrix();
+        lineCoords = new float[2];
 
         float lineScaleY = (float) (viewWidth + translateX) / (viewHeight + translateY) * 4;
         float centerY = (float) (viewHeight / 2 - lineSize / 2);
@@ -189,7 +240,7 @@ public class CollageImageView extends AppCompatImageView {
 
         initializeShape(shape);
 
-        switch (byParent) {
+        switch (resourceByLine) {
             case LEFT:
                 shapeCoords[0] = startX / viewWidth;
                 shapeCoords[2] = 0;
@@ -239,8 +290,8 @@ public class CollageImageView extends AppCompatImageView {
         matrix.postSkew(skewX, skewY, pivot[0], pivot[1]);
 
         path.transform(matrix);
-        Log.d(CLASS_NAME + " setMatrixShape.kx", String.valueOf(kx));
-        Log.d(CLASS_NAME + " setMatrixShape.scaleX", String.valueOf(scaleX));
+        Log.d(CLASS_NAME + "setMatrixShape.kx", String.valueOf(kx));
+        Log.d(CLASS_NAME + "setMatrixShape.scaleX", String.valueOf(scaleX));
     }
 
     protected float[] getMatrixRotate() {
@@ -295,11 +346,14 @@ public class CollageImageView extends AppCompatImageView {
         super.onSizeChanged(w, h, oldw, oldh);
         viewWidth = w;
         viewHeight = h;
-        if (oldw != w || oldh != h) {
+        if (attrs == null) {
+            init(context);
+        }
+        else {
             setLineTranslate(lineOrientation);
-//            setScaleType();
             init();
         }
+
         Log.d(CLASS_NAME + " onSizeChanged.viewWidth", " " + viewWidth);
         Log.d(CLASS_NAME + " onSizeChanged.viewHeight", " " + viewHeight);
         Log.d(CLASS_NAME, "onSizeChanged");
@@ -310,16 +364,13 @@ public class CollageImageView extends AppCompatImageView {
         int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
         int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
 
-//        Drawable drawable = getDrawable();
-//        bitmap = ((BitmapDrawable) drawable).getBitmap();
-
         if (setViewSize())
             setMeasuredDimension(Math.min(parentWidth, bitmapWidth), Math.min(parentHeight, bitmapHeight));
         else
             setMeasuredDimension(parentWidth, parentHeight);
 
-        Log.d(CLASS_NAME + " onMeasure.parentX", String.valueOf(parentWidth));
-        Log.d(CLASS_NAME + " onMeasure.parentY", String.valueOf(parentHeight));
+        Log.d(CLASS_NAME + " onMeasure.parentWidth", String.valueOf(parentWidth));
+        Log.d(CLASS_NAME + " onMeasure.parentHeight", String.valueOf(parentHeight));
         Log.d("bitmapSize", String.format("w: %d  h: %d", bitmapWidth, bitmapHeight));
         Log.d(CLASS_NAME, "onMeasure");
     }
@@ -359,13 +410,13 @@ public class CollageImageView extends AppCompatImageView {
         if (degrees >= 90) {
             for (float i = degrees; i >= 0; i -= 90) {
                 degrees = i;
-                Log.d(CLASS_NAME + " getCorrectDegrees", String.valueOf(degrees));
+                Log.d(CLASS_NAME + "getCorrectDegrees", String.valueOf(degrees));
             }
         }
         else if (degrees <= -90) {
             for (float i = degrees; i <= 0; i += 90) {
                 degrees = i;
-                Log.d(CLASS_NAME + " getCorrectDegrees", String.valueOf(degrees));
+                Log.d(CLASS_NAME + "getCorrectDegrees", String.valueOf(degrees));
             }
         }
         return degrees;
@@ -377,16 +428,24 @@ public class CollageImageView extends AppCompatImageView {
 
     public void setRotateDegrees(float degrees) { rotateDegrees = degrees; }
 
-    public void setLineSize(int size) { lineSize = size; }
+    public void setLineSize(int size) {
+        lineSize = size;
+        Log.d(CLASS_NAME, "setLineSize");
+    }
 
-    public void setLineStart(@Sides int side) { lineStart = side; }
+    public void setLineDrawStart(@Sides int side) {
+        lineStart = side;
+        Log.d(CLASS_NAME, "setLineStart");
+    }
 
-    public void setRotateSide(@Sides int side) { byParent = side; }
+    public void setResourceSide(@Sides int side) { resourceByLine = side; }
 
     public void setLineOrientation(@Orientation int orientation) { lineOrientation = orientation; }
 
     public void setLineRotateSide(@Sides int turnSide) { lineRotateSide = turnSide; }
 
-    public void setLineColor(int color) { lineColor = color; }
+    public void setLineColor(int color) {
+        lineColor = ContextCompat.getColor(context, color);
+    }
 }
 

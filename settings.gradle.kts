@@ -22,4 +22,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "auto gallery"
 include(":app")
- 
+include(":collageview")
+include(":myLayout")

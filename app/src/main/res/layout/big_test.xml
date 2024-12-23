@@ -40,7 +40,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
 
-            <com.myapp.autogallery.items.CollageImageView android:id="@+id/collageImage"
+            <com.myapp.collageview.CollageImageView
+                android:id="@+id/collageImage"
                 android:layout_width="200dp"
                 android:layout_height="match_parent"
                 app:lineSize="6px"
@@ -50,7 +51,7 @@
                 app:lineOrientation="vertical"
                 app:from_line="right"
                 app:rotateSide="top"
-                app:lineStart="top"
+                app:lineDrawStart="top"
                 android:src="@drawable/porsche911gt3_2"
                 app:layout_constraintRight_toRightOf="parent"/>
 

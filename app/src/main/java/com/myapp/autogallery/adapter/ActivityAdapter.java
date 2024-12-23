@@ -58,16 +58,6 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.CardHo
         holder.itemView.setLayoutParams(layoutParams);
     }
 
-    public TextView getTextViewAtPosition(int position, int typeTextView) {
-        RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(position);
-        if (viewHolder != null) {
-            CardHolder cardHolder = (CardHolder) viewHolder;
-            if (typeTextView == TITLE) return cardHolder.title;
-            else if (typeTextView == TEXT) return cardHolder.text;
-        }
-        return null;
-    }
-
     @Override
     public int getItemCount() {
         return activitySections.size();
@@ -78,8 +68,8 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.CardHo
         return activitySections.get(position).getTemplate();
     }
 
-    public ActivitySection getItem(int index) {
-        return activitySections.get(index);
+    public ActivitySection getItem(int position) {
+        return activitySections.get(position);
     }
 
     public void updateItem(int index, ActivitySection updatedItem) {

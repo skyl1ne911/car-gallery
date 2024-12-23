@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.myapp.autogallery.R;
@@ -51,8 +50,8 @@ public class FragmentViewPager extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             sections = getArguments().getParcelableArrayList("sections");
-            fragments.add(FragmentSlider.newInstance(sections));
-            fragments.add(FragmentSlider.newInstance(sections));
+            fragments.add(FragmentMainPage.newInstance(sections));
+            fragments.add(FragmentMainPage.newInstance(sections));
         }
     }
 

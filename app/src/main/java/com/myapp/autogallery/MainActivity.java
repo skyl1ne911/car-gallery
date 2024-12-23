@@ -93,12 +93,12 @@ public class MainActivity extends AppCompatActivity implements ScrollCallback {
                 .setTitle(R.string.hyperCarTitle)
                 .setText(R.string.hyperCarText)
                 .build());
-        activitiesData.add(new ActivitySection.CardBuilder(this, 1)
-                .setIcon(R.drawable.icon_speedlimiter)
-                .setTitle(R.string.hyperCarTitle)
-                .setText(R.string.hyperCarText)
-                .setTemplate(R.layout.big_test, true)
-                .build());
+//        activitiesData.add(new ActivitySection.CardBuilder(this, 1)
+//                .setIcon(R.drawable.icon_speedlimiter)
+//                .setTitle(R.string.hyperCarTitle)
+//                .setText(R.string.hyperCarText)
+//                .setTemplate(R.layout.big_test, true)
+//                .build());
 
 //        activitiesData.add(new ActivitySection.CardBuilder(this, 1)
 //                .setImage(R.drawable.bmwm3e30)
