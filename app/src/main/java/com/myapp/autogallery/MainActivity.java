@@ -3,10 +3,15 @@ package com.myapp.autogallery;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.RenderEffect;
+import android.graphics.Shader;
 import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,12 +21,14 @@ import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.myapp.autogallery.fragments.FragmentViewPager;
 import com.myapp.autogallery.fragments.LowerBar;
 import com.myapp.autogallery.fragments.UpperBar;
 import com.myapp.autogallery.interfaces.ScrollCallback;
 import com.myapp.autogallery.items.ActivitySection;
+import com.myapp.autogallery.viewmodels.SharedViewModel;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,8 +37,6 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements ScrollCallback {
-    private int ID = 1;
-
     private UpperBar upperBar;
     private LowerBar lowerBar;
     private FragmentViewPager fragmentPager;
@@ -52,17 +57,18 @@ public class MainActivity extends AppCompatActivity implements ScrollCallback {
             return insets;
         });
 
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.backgroundBar));
-        getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.navigationBar));
+        Window window = getWindow();
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.backgroundBar));
+        window.setNavigationBarColor(ContextCompat.getColor(this, R.color.navigationBar));
 
         activitiesSection = setActivitiesData();
 
         if (savedInstanceState == null) {
             fragmentPager = FragmentViewPager.newInstance(activitiesSection);
-            upperBar = new UpperBar();
             lowerBar = new LowerBar();
-            getSupportFragmentManager().beginTransaction().add(R.id.fragmentViewPager, fragmentPager).commit();
+            upperBar = new UpperBar();
             getSupportFragmentManager().beginTransaction().add(R.id.fragmentUpperBar, upperBar).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.fragmentViewPager, fragmentPager).commit();
             getSupportFragmentManager().beginTransaction().add(R.id.fragmentLowerBar, lowerBar).commit();
         }
         else {
@@ -70,60 +76,44 @@ public class MainActivity extends AppCompatActivity implements ScrollCallback {
         }
 
 
-//        viewPager.post(() -> viewPager.setCurrentItem(UpperBar.Tabs.ACTIVITIES.getNumber(), false));
-//        viewPager.setCurrentItem(UpperBar.Tabs.ACTIVITIES.getNumber(), false);
-//        viewPager.registerOnPageChangeCallback(registerPageSelect());
-//        viewPager.setOffscreenPageLimit(2);
-
-//        BlurView blurView = findViewById(R.id.blurView);
-//        ConstraintLayout constraintLayout = findViewById(R.id.main);
-//        blurView.setupWith(viewPager).setBlurRadius(5f);
         Log.d("activitiesSection", activitiesSection.getClass().toString());
         Log.d("MainActivity.log", "onCreate");
     }
 
     private List<ActivitySection> setActivitiesData() {
-        LayerDrawable gradients = (LayerDrawable) AppCompatResources.getDrawable(this, R.drawable.card_text_gradient);
         List<ActivitySection> activitiesData = new ArrayList<>();
-
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.bmwm3e30);
 
         activitiesData.add(new ActivitySection.CardBuilder(this, 0)
+                .setImage(R.drawable.bugattichiron)
                 .setIcon(R.drawable.icon_speedlimiter)
                 .setTitle(R.string.hyperCarTitle)
                 .setText(R.string.hyperCarText)
                 .build());
-//        activitiesData.add(new ActivitySection.CardBuilder(this, 1)
-//                .setIcon(R.drawable.icon_speedlimiter)
-//                .setTitle(R.string.hyperCarTitle)
-//                .setText(R.string.hyperCarText)
-//                .setTemplate(R.layout.big_test, true)
-//                .build());
-
-//        activitiesData.add(new ActivitySection.CardBuilder(this, 1)
-//                .setImage(R.drawable.bmwm3e30)
-//                .setTitle(R.string.rareCarTitle)
-//                .setText(R.string.rareCarText)
-//                .setTemplate(R.layout.card_small, false)
-//                .build());
-//        activitiesData.add(new ActivitySection.CardBuilder(this, 2)
-//                .setImage(R.drawable.dodgechallenger)
-//                .setTitle(R.string.muscleCarTitle)
-//                .setText(R.string.muscleCarText)
-//                .setTemplate(R.layout.card_medium, false)
-//                .build());
-//        activitiesData.add(new ActivitySection.CardBuilder(this, 3)
-//                .setImage(R.drawable.fordf150)
-//                .setTitle(R.string.largeCarTitle)
-//                .setText(R.string.largeCarText)
-//                .setTemplate(R.layout.card_medium_2, false)
-//                .build());
-//        activitiesData.add(new ActivitySection.CardBuilder(this, 4)
-//                .setImage(R.drawable.regera)
-//                .setTitle(R.string.beautifulCarTitle)
-//                .setText(R.string.beautifulCarText)
-//                .setTemplate(R.layout.card_small, false)
-//                .build());
+        activitiesData.add(new ActivitySection.CardBuilder(this, 1)
+                .setImage(R.drawable.bmwm3e30)
+                .setTitle(R.string.rareCarTitle)
+                .setText(R.string.rareCarText)
+                .setTemplate(R.layout.card_small, false)
+                .build());
+        activitiesData.add(new ActivitySection.CardBuilder(this, 2)
+                .setImage(R.drawable.dodgechallenger)
+                .setTitle(R.string.muscleCarTitle)
+                .setText(R.string.muscleCarText)
+                .setTemplate(R.layout.card_medium, false)
+                .build());
+        activitiesData.add(new ActivitySection.CardBuilder(this, 3)
+                .setImage(R.drawable.fordf150)
+                .setTitle(R.string.largeCarTitle)
+                .setText(R.string.largeCarText)
+                .setTemplate(R.layout.card_medium_2, false)
+                .build());
+        activitiesData.add(new ActivitySection.CardBuilder(this, 4)
+                .setImage(R.drawable.regera)
+                .setTitle(R.string.beautifulCarTitle)
+                .setText(R.string.beautifulCarText)
+                .setTemplate(R.layout.card_small, false)
+                .build());
 
 
 //        activitiesData.get(0).bitmap = bitmap;

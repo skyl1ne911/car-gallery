@@ -179,16 +179,10 @@ public class CollageImageView extends AppCompatImageView {
 
     @Override
     public void onDraw(Canvas canvas) {
+        canvas.drawPath(transformedLine, paint);
+        canvas.clipPath(transformedShape);
         super.onDraw(canvas);
-
-        Bitmap bitmap = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(),
-                Bitmap.Config.ARGB_8888);
-//        Canvas newCan = new Canvas(bitmap);
-//        newCan.drawPath(transformedLine, paint);
-//        newCan.clipPath(transformedShape);
-//        newCan.drawBitmap(this.bitmap, 0, 0, null);
-        canvas.drawBitmap(bitmap, 0, 0, paint);
-//        canvas.drawPath(transformedLine, paint);
+        canvas.drawPath(transformedLine, paint);
 
 //        transformedLine.close();
 //        transformedShape.close();

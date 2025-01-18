@@ -1,7 +1,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.AutoGallery" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">@font/tomorrow_medium</item>
+        <item name="colorSecondary">#ffffff</item>
+        <item name="colorPrimary">#ffffff</item>
     </style>
 </resources>

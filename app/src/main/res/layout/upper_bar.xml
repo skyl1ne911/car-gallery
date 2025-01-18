@@ -18,8 +18,6 @@
         android:paddingBottom="39dp"
 
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/tabs">
 
         <ImageView android:id="@+id/filterList"
@@ -32,19 +30,25 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
-        <TextView android:id="@+id/inputField"
-            android:layout_width="wrap_content"
+        <EditText android:id="@+id/inputField"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
 
             android:textAlignment="center"
+            android:paddingLeft="39dp"
 
-            android:text="@string/explore"
+            android:hint="@string/explore"
+            android:textColorHint="@color/white"
             android:fontFamily="@font/tomorrow_light"
             android:textSize="18sp"
             android:alpha="0.7"
+            android:textColor="@color/white"
+            android:background="@null"
+            android:textCursorDrawable="@color/white"
+            android:textSelectHandle="@drawable/drop_handle"
 
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/filterList"
+            app:layout_constraintRight_toLeftOf="@id/notice"
             app:layout_constraintTop_toTopOf="parent"/>
 
         <ImageView android:id="@+id/notice"
@@ -132,10 +136,5 @@
             app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

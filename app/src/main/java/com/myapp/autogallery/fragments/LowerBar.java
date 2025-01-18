@@ -24,6 +24,4 @@ public class LowerBar extends Fragment {
         View view = inflater.inflate(R.layout.lower_bar, container, false);
         return view;
     }
-
-
 }
